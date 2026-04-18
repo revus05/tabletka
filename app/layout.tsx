@@ -1,30 +1,48 @@
-import { Geist, Geist_Mono } from "next/font/google"
+import { Roboto } from "next/font/google";
+import { headers } from "next/headers";
 
-import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
+import "./globals.css";
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
+import Header from "@/components/header";
+import { ThemeProvider } from "@/components/theme-provider";
+import { getSession } from "@/lib/session";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'})
+const roboto = Roboto({
+  subsets: ["latin", "cyrillic"],
+  weight: ["400", "600"],
+  variable: "--font-sans",
+});
 
-const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-})
+export const metadata: Metadata = {
+  title: "Таблетка.бай — поиск лекарств в аптеках",
+  description: "Сравните цены на лекарства в аптеках Беларуси",
+};
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: ReactNode;
 }>) {
+  const headersList = await headers();
+  const pathname = headersList.get("x-pathname") ?? "";
+  const isAdmin = pathname.startsWith("/admin");
+
+  const session = isAdmin ? null : await getSession();
+
   return (
     <html
-      lang="en"
+      lang="ru"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", geist.variable)}
+      className={cn("antialiased", roboto.variable, "font-sans")}
     >
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          {!isAdmin && <Header user={session} />}
+          {children}
+        </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }

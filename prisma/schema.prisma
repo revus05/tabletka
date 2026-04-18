@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  name         String
+  passwordHash String
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now())
+
+  @@map("users")
+}
+
+model Medication {
+  id           Int      @id @default(autoincrement())
+  name         String
+  genericName  String?
+  manufacturer String?
+  imageUrl     String?
+  description  String?
+  createdAt    DateTime @default(now())
+
+  stocks          Stock[]
+  popularSearches PopularSearch[]
+
+  @@map("medications")
+}
+
+model Pharmacy {
+  id      Int     @id @default(autoincrement())
+  name    String
+  address String
+  city    String
+  region  String
+  phone   String?
+  logoUrl String?
+
+  stocks     Stock[]
+  promotions Promotion[]
+
+  @@map("pharmacies")
+}
+
+model Stock {
+  id           Int      @id @default(autoincrement())
+  medicationId Int
+  pharmacyId   Int
+  price        Decimal  @db.Decimal(10, 2)
+  quantity     Int      @default(0)
+  maxQuantity  Int      @default(100)
+  inStock      Boolean  @default(true)
+  updatedAt    DateTime @updatedAt
+
+  medication Medication @relation(fields: [medicationId], references: [id])
+  pharmacy   Pharmacy   @relation(fields: [pharmacyId], references: [id])
+
+  @@unique([medicationId, pharmacyId])
+  @@map("stocks")
+}
+
+model Promotion {
+  id          Int       @id @default(autoincrement())
+  pharmacyId  Int?
+  title       String
+  description String?
+  imageUrl    String?
+  startDate   DateTime?
+  endDate     DateTime?
+  createdAt   DateTime  @default(now())
+
+  pharmacy Pharmacy? @relation(fields: [pharmacyId], references: [id])
+
+  @@map("promotions")
+}
+
+model News {
+  id          Int      @id @default(autoincrement())
+  title       String
+  excerpt     String?
+  content     String?
+  imageUrl    String?
+  publishedAt DateTime @default(now())
+
+  @@map("news")
+}
+
+model PopularSearch {
+  id           Int        @id @default(autoincrement())
+  medicationId Int
+  searchCount  Int        @default(0)
+  medication   Medication @relation(fields: [medicationId], references: [id])
+
+  @@map("popular_searches")
+}
