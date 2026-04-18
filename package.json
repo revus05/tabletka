@@ -9,7 +9,13 @@
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
+    "db:seed": "bun run prisma/seed.ts",
+    "postinstall": "bun run db:generate"
   },
   "dependencies": {
     "@hugeicons/core-free-icons": "^4.1.1",
