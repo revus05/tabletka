@@ -48,7 +48,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     <div className="min-h-screen bg-white">
       <main className="mx-auto max-w-[1200px] px-5 py-6">
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-[14px] text-gray mb-5">
+        <nav className="flex items-center gap-2 text-[14px] text-gray mb-5 flex-wrap">
           <Link href="/" className="hover:text-brand">Главная</Link>
           <span>/</span>
           <Link href={`/search?q=${encodeURIComponent(medication.name)}`} className="hover:text-brand">
@@ -58,14 +58,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <span className="text-dark">{pharmacy.name}</span>
         </nav>
 
-        <div className="grid grid-cols-[1fr_340px] gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_340px] gap-6">
           {/* ── Main content ── */}
           <div className="flex flex-col gap-6">
             {/* Product card */}
             <div className="border border-gray-border rounded-[4px] p-6">
-              <div className="flex gap-6">
+              <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
                 {/* Image */}
-                <div className="w-[200px] h-[200px] shrink-0 border border-gray-border rounded-[4px] bg-gray-bg flex items-center justify-center overflow-hidden">
+                <div className="w-full sm:w-[200px] h-[180px] sm:h-[200px] sm:shrink-0 border border-gray-border rounded-[4px] bg-gray-bg flex items-center justify-center overflow-hidden">
                   {medication.imageUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={medication.imageUrl} alt={medication.name} className="w-full h-full object-contain p-2" />
@@ -152,7 +152,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     <Link
                       key={s.pharmacyId}
                       href={`/pharmacy/${s.pharmacyId}/product/${productId}`}
-                      className="flex items-center justify-between border border-gray-border rounded-[4px] p-4 hover:border-brand transition-colors"
+                      className="flex items-center justify-between border border-gray-border rounded-[4px] p-3 md:p-4 hover:border-brand transition-colors gap-2"
                     >
                       <div className="flex items-center gap-4">
                         <div className="w-[48px] h-[48px] border border-gray-border rounded-[4px] bg-gray-bg flex items-center justify-center shrink-0 overflow-hidden">
@@ -181,7 +181,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
           {/* ── Sidebar: Pharmacy info ── */}
           <aside className="flex flex-col gap-4">
-            <div className="border border-gray-border rounded-[4px] p-5 sticky top-[140px]">
+            <div className="border border-gray-border rounded-[4px] p-5 md:sticky md:top-[100px]">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-[48px] h-[48px] border border-gray-border rounded-[4px] bg-gray-bg flex items-center justify-center shrink-0 overflow-hidden">
                   {pharmacy.logoUrl ? (

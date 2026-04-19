@@ -68,9 +68,9 @@ export default async function HomePage() {
       <main>
         {/* ── Hero ── */}
         <section className="mx-auto max-w-[1200px] px-5 py-6">
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Left: BAD delivery banner */}
-            <div className="relative overflow-hidden bg-brand rounded-[4px] p-8 min-h-[364px] flex flex-col justify-between">
+            <div className="relative overflow-hidden bg-brand rounded-[4px] p-8 min-h-[220px] md:min-h-[364px] flex flex-col justify-between">
               <div className="relative z-10">
                 <h2 className="text-white text-[32px] font-semibold leading-tight mb-3">
                   Доставляем БАДы<br />на дом
@@ -132,8 +132,8 @@ export default async function HomePage() {
 
         {/* ── Popular searches ── */}
         <section className="mx-auto max-w-[1200px] px-5 mb-6">
-          <div className="bg-brand-light rounded-[4px] p-6 flex items-center gap-4">
-            <div className="flex-1">
+          <div className="bg-brand-light rounded-[4px] p-6 flex flex-col md:flex-row items-start md:items-center gap-4">
+            <div className="flex-1 w-full">
               <div className="flex items-center gap-6 mb-4">
                 <h2 className="text-dark text-[20px] font-semibold">Популярные запросы</h2>
                 <Link href="#" className="text-brand text-[15px] font-semibold hover:text-brand-hover">
@@ -161,7 +161,7 @@ export default async function HomePage() {
                 ))}
               </div>
             </div>
-            <div className="shrink-0 w-[200px] h-[130px] flex items-center justify-center opacity-60">
+            <div className="hidden md:flex shrink-0 w-[200px] h-[130px] items-center justify-center opacity-60">
               <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
                 <circle cx="60" cy="60" r="55" stroke="#29a373" strokeWidth="2" opacity="0.3" />
                 <circle cx="60" cy="60" r="40" fill="#29a373" opacity="0.15" />
@@ -181,7 +181,7 @@ export default async function HomePage() {
                 Все товары
               </Link>
             </div>
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {medications.map((med) => (
                 <MedicationCard
                   key={med.id}
@@ -197,7 +197,7 @@ export default async function HomePage() {
 
         {/* ── Articles / Materials ── */}
         <section className="mx-auto max-w-[1200px] px-5 mb-8">
-          <div className="grid grid-cols-4 gap-4 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             <div className="bg-brand-light rounded-[4px] p-6 flex flex-col justify-between">
               <div>
                 <h3 className="text-dark text-[18px] font-semibold mb-3">
@@ -215,12 +215,12 @@ export default async function HomePage() {
               <ArticleCard key={article.id} title={article.title} />
             ))}
           </div>
-          <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             {articles.slice(3, 5).map((article) => (
               <WideArticleCard key={article.id} title={article.title} />
             ))}
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {articles.slice(5, 8).map((article) => (
               <ArticleCard key={article.id} title={article.title} tall />
             ))}
@@ -230,7 +230,7 @@ export default async function HomePage() {
         {/* ── Pharmacy leaders ── */}
         {priceLeaders.length > 0 && (
           <section className="mx-auto max-w-[1200px] px-5 mb-8">
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <PharmacyLeaderTable
                 title="Лидеры средних цен"
                 subtitle="/ по всей Беларуси"
@@ -255,7 +255,7 @@ export default async function HomePage() {
                 Все акции
               </Link>
             </div>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {promotions.map((promo) => (
                 <div key={promo.id} className="rounded-[4px] overflow-hidden border border-gray-border">
                   <div className="h-[234px] bg-brand-light flex items-center justify-center">
@@ -297,7 +297,7 @@ export default async function HomePage() {
                 Все новости
               </Link>
             </div>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {newsItems.map((item) => (
                 <div key={item.id} className="rounded-[4px] overflow-hidden border border-gray-border hover:border-brand transition-colors group">
                   <div className="h-[160px] bg-gray-bg">
@@ -333,7 +333,7 @@ export default async function HomePage() {
               <h2 className="text-dark text-[28px] font-semibold mb-6">
                 Установите наше приложение
               </h2>
-              <div className="grid grid-cols-2 gap-4 mb-6 text-[15px] text-dark">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 text-[15px] text-dark">
                 <ul className="space-y-2">
                   {["Удобный поиск лекарств", "Бронирование лекарств в аптеке"].map((f) => (
                     <li key={f} className="flex items-center gap-2">
@@ -351,7 +351,7 @@ export default async function HomePage() {
                   ))}
                 </ul>
               </div>
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <a href="#" className="flex items-center gap-3 bg-dark text-white px-5 py-3 rounded-[4px] hover:bg-black transition-colors">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
                     <path d="M3.18 23.76A2 2 0 0 0 5 24c.67 0 1.38-.18 2.01-.56l11.27-6.51-3.5-3.5L3.18 23.76zM22.72 9.32l-3.38-1.95-3.91 3.91 3.91 3.91 3.4-1.96A2.02 2.02 0 0 0 24 11.27a2.02 2.02 0 0 0-1.28-1.95zM1.05.29A2 2 0 0 0 .06 2v20a2 2 0 0 0 .99 1.71l.12.07 11.2-11.2v-.27L1.17.21l-.12.08zm14.59 8.14L4.43.76 3.18.04A2 2 0 0 0 1.05.29l11.32 11.32 3.27-3.27z" />
@@ -441,8 +441,8 @@ function ArticleCard({ title, tall = false }: { title: string; tall?: boolean })
 
 function WideArticleCard({ title }: { title: string }) {
   return (
-    <div className="flex rounded-[4px] overflow-hidden border border-gray-border hover:border-brand transition-colors">
-      <div className="w-[282px] shrink-0 bg-gray-bg h-[172px]" />
+    <div className="flex flex-col md:flex-row rounded-[4px] overflow-hidden border border-gray-border hover:border-brand transition-colors">
+      <div className="w-full md:w-[282px] md:shrink-0 bg-gray-bg h-[160px] md:h-[172px]" />
       <div className="flex flex-col justify-between p-5 flex-1">
         <p className="text-dark text-[16px] font-semibold leading-snug line-clamp-3">{title}</p>
         <Link href="#" className="text-brand text-[15px] font-semibold hover:text-brand-hover flex items-center gap-1">

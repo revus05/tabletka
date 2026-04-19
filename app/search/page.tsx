@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Footer } from "@/components/footer"
 import { searchMedications } from "@/lib/queries/search"
+import { SearchMobileFilters } from "@/components/search-mobile-filters"
 
 type SearchPageProps = {
   searchParams: Promise<{ q?: string; region?: string; inStock?: string }>
@@ -17,17 +18,17 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   return (
     <div className="min-h-screen bg-white">
-      <main className="mx-auto max-w-[1200px] px-5 py-6">
+      <main className="mx-auto max-w-[1200px] px-4 md:px-5 py-6">
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-[14px] text-gray mb-5">
+        <nav className="flex items-center gap-2 text-[14px] text-gray mb-5 flex-wrap">
           <Link href="/" className="hover:text-brand">Главная</Link>
           <span>/</span>
-          <span className="text-dark">Поиск: {query}</span>
+          <span className="text-dark truncate max-w-[200px]">Поиск: {query}</span>
         </nav>
 
         <div className="flex gap-6">
-          {/* ── Sidebar filters ── */}
-          <aside className="w-[250px] shrink-0">
+          {/* ── Sidebar filters — desktop only ── */}
+          <aside className="hidden md:block w-[250px] shrink-0">
             <form method="GET" action="/search">
               {query && <input type="hidden" name="q" value={query} />}
               <div className="bg-gray-bg rounded-[4px] p-5 mb-4">
@@ -75,21 +76,30 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
           {/* ── Results ── */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-5">
-              <h1 className="text-dark text-[24px] font-semibold">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+              <h1 className="text-dark text-[20px] md:text-[24px] font-semibold min-w-0">
                 {query ? (
-                  <>«{query}»<span className="text-gray text-[18px] ml-2 font-normal">— {results.length} аптек</span></>
+                  <>«{query}»<span className="text-gray text-[16px] md:text-[18px] ml-2 font-normal">— {results.length} аптек</span></>
                 ) : (
                   "Результаты поиска"
                 )}
               </h1>
-              <div className="flex items-center gap-2 text-[15px]">
-                <span className="text-gray">Сортировка:</span>
-                <select className="border border-gray-border rounded-[4px] px-3 py-1.5 text-dark text-[15px] outline-none focus:border-brand">
-                  <option>По цене (возр.)</option>
-                  <option>По цене (убыв.)</option>
-                  <option>По наличию</option>
-                </select>
+              <div className="flex items-center gap-2">
+                {/* Mobile filter button */}
+                <SearchMobileFilters
+                  query={query}
+                  region={region}
+                  inStock={inStock}
+                  regions={regions}
+                />
+                <div className="flex items-center gap-2 text-[15px]">
+                  <span className="text-gray hidden sm:inline">Сортировка:</span>
+                  <select className="border border-gray-border rounded-[4px] px-2 md:px-3 py-1.5 text-dark text-[14px] md:text-[15px] outline-none focus:border-brand">
+                    <option>По цене (возр.)</option>
+                    <option>По цене (убыв.)</option>
+                    <option>По наличию</option>
+                  </select>
+                </div>
               </div>
             </div>
 
@@ -112,14 +122,14 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                   <Link
                     key={result.id}
                     href={`/pharmacy/${result.pharmacyId}/product/${result.medicationId}`}
-                    className="flex items-start gap-5 bg-white border border-gray-border rounded-[4px] p-5 hover:border-brand hover:shadow-sm transition-all group"
+                    className="flex items-start gap-3 md:gap-5 bg-white border border-gray-border rounded-[4px] p-3 md:p-5 hover:border-brand hover:shadow-sm transition-all group"
                   >
-                    <div className="w-[72px] h-[72px] shrink-0 border border-gray-border rounded-[4px] bg-gray-bg flex items-center justify-center overflow-hidden">
+                    <div className="w-[56px] h-[56px] md:w-[72px] md:h-[72px] shrink-0 border border-gray-border rounded-[4px] bg-gray-bg flex items-center justify-center overflow-hidden">
                       {result.logoUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={result.logoUrl} alt={result.pharmacyName} className="w-full h-full object-contain p-1" />
                       ) : (
-                        <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+                        <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
                           <circle cx="16" cy="16" r="15" fill="#eaf6f1" />
                           <path d="M10 16h12M16 10v12" stroke="#29a373" strokeWidth="2.5" strokeLinecap="round" />
                         </svg>
@@ -127,13 +137,13 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      <p className="text-dark text-[13px] text-gray mb-0.5">{result.medicationName}</p>
-                      <p className="text-dark text-[16px] font-semibold leading-snug mb-1 group-hover:text-brand transition-colors">
+                      <p className="text-dark text-[13px] text-gray mb-0.5 truncate">{result.medicationName}</p>
+                      <p className="text-dark text-[15px] md:text-[16px] font-semibold leading-snug mb-1 group-hover:text-brand transition-colors">
                         {result.pharmacyName}
                       </p>
-                      <p className="text-gray text-[14px] mb-3">{result.address}</p>
+                      <p className="text-gray text-[13px] md:text-[14px] mb-2 truncate">{result.address}</p>
 
-                      <div className="flex items-center gap-3">
+                      <div className="hidden sm:flex items-center gap-3">
                         <span className="text-[13px] text-gray shrink-0">Наличие:</span>
                         <div className="flex-1 max-w-[180px] h-[6px] bg-gray-border rounded-full overflow-hidden">
                           <div
@@ -141,25 +151,22 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                             style={{ width: `${scarcityPct}%`, backgroundColor: scarcityColor }}
                           />
                         </div>
-                        <span
-                          className="text-[13px] font-semibold shrink-0"
-                          style={{ color: scarcityColor }}
-                        >
-                          {result.inStock ? `${result.quantity} шт.` : "Нет в наличии"}
+                        <span className="text-[13px] font-semibold shrink-0" style={{ color: scarcityColor }}>
+                          {result.inStock ? `${result.quantity} шт.` : "Нет"}
                         </span>
                       </div>
                     </div>
 
-                    <div className="shrink-0 flex flex-col items-end gap-3">
-                      <p className="text-dark text-[22px] font-semibold">
+                    <div className="shrink-0 flex flex-col items-end gap-2">
+                      <p className="text-dark text-[18px] md:text-[22px] font-semibold">
                         {result.price.toFixed(2)} р.
                       </p>
                       {result.inStock ? (
-                        <span className="inline-flex items-center justify-center h-[36px] px-5 bg-brand text-white text-[15px] font-semibold rounded-[4px] hover:bg-brand-hover transition-colors">
+                        <span className="inline-flex items-center justify-center h-[34px] md:h-[36px] px-3 md:px-5 bg-brand text-white text-[13px] md:text-[15px] font-semibold rounded-[4px] hover:bg-brand-hover transition-colors whitespace-nowrap">
                           Подробнее
                         </span>
                       ) : (
-                        <span className="inline-flex items-center justify-center h-[36px] px-5 bg-gray-bg text-gray text-[15px] rounded-[4px]">
+                        <span className="inline-flex items-center justify-center h-[34px] md:h-[36px] px-3 md:px-5 bg-gray-bg text-gray text-[13px] md:text-[15px] rounded-[4px] whitespace-nowrap">
                           Нет в наличии
                         </span>
                       )}

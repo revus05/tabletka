@@ -5,7 +5,7 @@ export function Footer() {
   return (
     <footer className="bg-dark text-white mt-12">
       <div className="mx-auto max-w-[1200px] px-5 py-10">
-        <div className="grid grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {/* Logo + description */}
           <div className="col-span-1">
             <div className="flex items-center gap-2 mb-4">
@@ -84,7 +84,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-dark-alt flex items-center justify-between">
+        <div className="mt-8 pt-6 border-t border-dark-alt flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-[13px] text-gray">
             © {new Date().getFullYear()} tabletka.by — все права защищены
           </p>
