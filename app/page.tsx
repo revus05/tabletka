@@ -19,7 +19,7 @@ const articles = [
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default async function HomePage() {
-  const [popularSearches, promotions, newsItems, pharmacies] = await Promise.all([
+  const [popularSearches, promotions, newsItems, pharmacies, medications] = await Promise.all([
     prisma.popularSearch.findMany({
       include: { medication: true },
       orderBy: { searchCount: "desc" },
@@ -37,6 +37,18 @@ export default async function HomePage() {
     prisma.pharmacy.findMany({
       include: { stocks: { select: { price: true } } },
       take: 5,
+    }),
+    prisma.medication.findMany({
+      where: { stocks: { some: { inStock: true } } },
+      include: {
+        stocks: {
+          where: { inStock: true },
+          select: { price: true },
+          orderBy: { price: "asc" },
+          take: 1,
+        },
+      },
+      take: 8,
     }),
   ])
 
@@ -58,18 +70,18 @@ export default async function HomePage() {
         <section className="mx-auto max-w-[1200px] px-5 py-6">
           <div className="grid grid-cols-2 gap-6">
             {/* Left: BAD delivery banner */}
-            <div className="relative overflow-hidden bg-[#29a373] rounded-[4px] p-8 min-h-[364px] flex flex-col justify-between">
+            <div className="relative overflow-hidden bg-brand rounded-[4px] p-8 min-h-[364px] flex flex-col justify-between">
               <div className="relative z-10">
                 <h2 className="text-white text-[32px] font-semibold leading-tight mb-3">
                   Доставляем БАДы<br />на дом
                 </h2>
-                <p className="text-[#d4ede3] text-[15px] leading-relaxed max-w-[250px]">
+                <p className="text-brand-muted text-[15px] leading-relaxed max-w-[250px]">
                   Огромный выбор БАДов мировых брендов
                 </p>
               </div>
               <Link
                 href="#"
-                className="relative z-10 inline-flex items-center justify-center bg-white text-[#29a373] font-semibold text-[16px] h-[40px] px-6 rounded-[4px] hover:bg-[#eaf6f1] transition-colors w-fit"
+                className="relative z-10 inline-flex items-center justify-center bg-white text-brand font-semibold text-[16px] h-[40px] px-6 rounded-[4px] hover:bg-brand-light transition-colors w-fit"
               >
                 Подробнее
               </Link>
@@ -79,37 +91,37 @@ export default async function HomePage() {
 
             {/* Right: New in directory + 2 small banners */}
             <div className="flex flex-col gap-4">
-              <div className="bg-[#f5f5f5] rounded-[4px] p-5">
-                <h3 className="text-[#2b2b2b] text-[18px] font-semibold mb-4">Новое в справочнике</h3>
+              <div className="bg-gray-bg rounded-[4px] p-5">
+                <h3 className="text-dark text-[18px] font-semibold mb-4">Новое в справочнике</h3>
                 <div className="flex flex-wrap gap-2">
                   {newInDirectory.length > 0 ? newInDirectory.map((item) => (
                     <Link
                       key={item}
                       href={`/search?q=${encodeURIComponent(item)}`}
-                      className="inline-flex items-center px-3 py-1.5 bg-white rounded-[4px] text-[14px] text-[#2b2b2b] hover:bg-[#eaf6f1] hover:text-[#29a373] transition-colors border border-[#e5eaeb]"
+                      className="inline-flex items-center px-3 py-1.5 bg-white rounded-[4px] text-[14px] text-dark hover:bg-brand-light hover:text-brand transition-colors border border-gray-border"
                     >
                       {item}
                     </Link>
                   )) : (
-                    <p className="text-[#7a7a7a] text-[14px]">Пока пусто</p>
+                    <p className="text-gray text-[14px]">Пока пусто</p>
                   )}
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4 flex-1">
-                <div className="bg-[#29a373] rounded-[4px] p-4 flex flex-col justify-between min-h-[170px] overflow-hidden relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#29a373] to-[#196346]" />
+                <div className="bg-brand rounded-[4px] p-4 flex flex-col justify-between min-h-[170px] overflow-hidden relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-brand to-brand-hover" />
                   <div className="relative z-10">
-                    <p className="text-[#d4ede3] text-[13px] font-semibold mb-2">tabletka.by</p>
+                    <p className="text-brand-muted text-[13px] font-semibold mb-2">tabletka.by</p>
                     <p className="text-white text-[16px] font-semibold leading-tight">
                       Заказывайте со склада
                     </p>
-                    <p className="text-[#d4ede3] text-[13px] mt-1">и сэкономьте больше</p>
+                    <p className="text-brand-muted text-[13px] mt-1">и сэкономьте больше</p>
                   </div>
                 </div>
-                <div className="bg-[#eaf6f1] rounded-[4px] p-4 flex flex-col justify-between min-h-[170px]">
-                  <p className="text-[#7a7a7a] text-[13px] font-semibold">АВЕН</p>
-                  <p className="text-[#2b2b2b] text-[16px] font-semibold leading-tight">
+                <div className="bg-brand-light rounded-[4px] p-4 flex flex-col justify-between min-h-[170px]">
+                  <p className="text-gray text-[13px] font-semibold">АВЕН</p>
+                  <p className="text-dark text-[16px] font-semibold leading-tight">
                     Невидимый за 1 секунду
                   </p>
                 </div>
@@ -120,11 +132,11 @@ export default async function HomePage() {
 
         {/* ── Popular searches ── */}
         <section className="mx-auto max-w-[1200px] px-5 mb-6">
-          <div className="bg-[#eaf6f1] rounded-[4px] p-6 flex items-center gap-4">
+          <div className="bg-brand-light rounded-[4px] p-6 flex items-center gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-6 mb-4">
-                <h2 className="text-[#2b2b2b] text-[20px] font-semibold">Популярные запросы</h2>
-                <Link href="#" className="text-[#29a373] text-[15px] font-semibold hover:text-[#196346]">
+                <h2 className="text-dark text-[20px] font-semibold">Популярные запросы</h2>
+                <Link href="#" className="text-brand text-[15px] font-semibold hover:text-brand-hover">
                   Подробная статистика
                 </Link>
               </div>
@@ -135,8 +147,8 @@ export default async function HomePage() {
                     href={`/search?q=${encodeURIComponent(item.medication.name)}`}
                     className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-[4px] text-[15px] transition-colors ${
                       i === 0
-                        ? "bg-[#29a373] text-white"
-                        : "bg-white text-[#2b2b2b] hover:bg-[#29a373] hover:text-white"
+                        ? "bg-brand text-white"
+                        : "bg-white text-dark hover:bg-brand hover:text-white"
                     }`}
                   >
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="shrink-0">
@@ -160,19 +172,42 @@ export default async function HomePage() {
           </div>
         </section>
 
+        {/* ── Medications in stock ── */}
+        {medications.length > 0 && (
+          <section className="mx-auto max-w-[1200px] px-5 mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-dark text-[24px] font-semibold">Товары в наличии</h2>
+              <Link href="/search?q=" className="text-brand text-[15px] font-semibold hover:text-brand-hover">
+                Все товары
+              </Link>
+            </div>
+            <div className="grid grid-cols-4 gap-4">
+              {medications.map((med) => (
+                <MedicationCard
+                  key={med.id}
+                  id={med.id}
+                  name={med.name}
+                  imageUrl={med.imageUrl}
+                  minPrice={med.stocks[0] ? Number(med.stocks[0].price) : null}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* ── Articles / Materials ── */}
         <section className="mx-auto max-w-[1200px] px-5 mb-8">
           <div className="grid grid-cols-4 gap-4 mb-4">
-            <div className="bg-[#eaf6f1] rounded-[4px] p-6 flex flex-col justify-between">
+            <div className="bg-brand-light rounded-[4px] p-6 flex flex-col justify-between">
               <div>
-                <h3 className="text-[#2b2b2b] text-[18px] font-semibold mb-3">
+                <h3 className="text-dark text-[18px] font-semibold mb-3">
                   Полезные<br />материалы
                 </h3>
-                <p className="text-[#7a7a7a] text-[14px] leading-relaxed">
+                <p className="text-gray text-[14px] leading-relaxed">
                   Читайте статьи и новости о здоровье и будьте в курсе выгодных акций
                 </p>
               </div>
-              <Link href="#" className="inline-flex items-center justify-center h-[40px] px-4 bg-[#29a373] text-white text-[15px] font-semibold rounded-[4px] hover:bg-[#196346] transition-colors">
+              <Link href="#" className="inline-flex items-center justify-center h-[40px] px-4 bg-brand text-white text-[15px] font-semibold rounded-[4px] hover:bg-brand-hover transition-colors">
                 Все материалы
               </Link>
             </div>
@@ -215,31 +250,31 @@ export default async function HomePage() {
         {promotions.length > 0 && (
           <section className="mx-auto max-w-[1200px] px-5 mb-8">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-[#2b2b2b] text-[24px] font-semibold">Акции аптечных сетей</h2>
-              <Link href="#" className="text-[#29a373] text-[15px] font-semibold hover:text-[#196346]">
+              <h2 className="text-dark text-[24px] font-semibold">Акции аптечных сетей</h2>
+              <Link href="#" className="text-brand text-[15px] font-semibold hover:text-brand-hover">
                 Все акции
               </Link>
             </div>
             <div className="grid grid-cols-3 gap-4">
               {promotions.map((promo) => (
-                <div key={promo.id} className="rounded-[4px] overflow-hidden border border-[#e5eaeb]">
-                  <div className="h-[234px] bg-[#eaf6f1] flex items-center justify-center">
+                <div key={promo.id} className="rounded-[4px] overflow-hidden border border-gray-border">
+                  <div className="h-[234px] bg-brand-light flex items-center justify-center">
                     {promo.imageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={promo.imageUrl} alt={promo.title} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-[22px] font-bold text-[#29a373]">АКЦИЯ</span>
+                      <span className="text-[22px] font-bold text-brand">АКЦИЯ</span>
                     )}
                   </div>
                   <div className="p-4">
-                    <p className="text-[#2b2b2b] text-[15px] font-semibold leading-snug mb-4">{promo.title}</p>
+                    <p className="text-dark text-[15px] font-semibold leading-snug mb-4">{promo.title}</p>
                     <div className="flex items-center justify-between">
-                      <span className="text-[#7a7a7a] text-[13px]">
+                      <span className="text-gray text-[13px]">
                         {promo.endDate
                           ? `до ${new Date(promo.endDate).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" })}`
                           : ""}
                       </span>
-                      <Link href="#" className="text-[#29a373] text-[15px] font-semibold hover:text-[#196346] flex items-center gap-1">
+                      <Link href="#" className="text-brand text-[15px] font-semibold hover:text-brand-hover flex items-center gap-1">
                         Подробнее
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                           <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -257,28 +292,28 @@ export default async function HomePage() {
         {newsItems.length > 0 && (
           <section className="mx-auto max-w-[1200px] px-5 mb-8">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-[#2b2b2b] text-[24px] font-semibold">Новости</h2>
-              <Link href="#" className="text-[#29a373] text-[15px] font-semibold hover:text-[#196346]">
+              <h2 className="text-dark text-[24px] font-semibold">Новости</h2>
+              <Link href="#" className="text-brand text-[15px] font-semibold hover:text-brand-hover">
                 Все новости
               </Link>
             </div>
             <div className="grid grid-cols-3 gap-4">
               {newsItems.map((item) => (
-                <div key={item.id} className="rounded-[4px] overflow-hidden border border-[#e5eaeb] hover:border-[#29a373] transition-colors group">
-                  <div className="h-[160px] bg-[#f5f5f5]">
+                <div key={item.id} className="rounded-[4px] overflow-hidden border border-gray-border hover:border-brand transition-colors group">
+                  <div className="h-[160px] bg-gray-bg">
                     {item.imageUrl && (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
                     )}
                   </div>
                   <div className="p-4">
-                    <p className="text-[#7a7a7a] text-[13px] mb-2">
+                    <p className="text-gray text-[13px] mb-2">
                       {new Date(item.publishedAt).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" })}
                     </p>
-                    <p className="text-[#2b2b2b] text-[15px] font-semibold leading-snug mb-3 line-clamp-3">
+                    <p className="text-dark text-[15px] font-semibold leading-snug mb-3 line-clamp-3">
                       {item.title}
                     </p>
-                    <Link href="#" className="text-[#29a373] text-[15px] font-semibold hover:text-[#196346] flex items-center gap-1 group-hover:gap-2 transition-all">
+                    <Link href="#" className="text-brand text-[15px] font-semibold hover:text-brand-hover flex items-center gap-1 group-hover:gap-2 transition-all">
                       Подробнее
                       <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                         <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -293,16 +328,16 @@ export default async function HomePage() {
 
         {/* ── App download banner ── */}
         <section className="mx-auto max-w-[1200px] px-5 mb-8">
-          <div className="bg-[#eaf6f1] rounded-[4px] p-10 relative overflow-hidden">
+          <div className="bg-brand-light rounded-[4px] p-10 relative overflow-hidden">
             <div className="relative z-10 max-w-[600px]">
-              <h2 className="text-[#2b2b2b] text-[28px] font-semibold mb-6">
+              <h2 className="text-dark text-[28px] font-semibold mb-6">
                 Установите наше приложение
               </h2>
-              <div className="grid grid-cols-2 gap-4 mb-6 text-[15px] text-[#2b2b2b]">
+              <div className="grid grid-cols-2 gap-4 mb-6 text-[15px] text-dark">
                 <ul className="space-y-2">
                   {["Удобный поиск лекарств", "Бронирование лекарств в аптеке"].map((f) => (
                     <li key={f} className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-[#29a373] shrink-0" />
+                      <span className="w-2 h-2 rounded-full bg-brand shrink-0" />
                       {f}
                     </li>
                   ))}
@@ -310,14 +345,14 @@ export default async function HomePage() {
                 <ul className="space-y-2">
                   {["Отображение аптек на карте", "Мультипоиск лекарств в аптеках"].map((f) => (
                     <li key={f} className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-[#29a373] shrink-0" />
+                      <span className="w-2 h-2 rounded-full bg-brand shrink-0" />
                       {f}
                     </li>
                   ))}
                 </ul>
               </div>
               <div className="flex gap-4">
-                <a href="#" className="flex items-center gap-3 bg-[#2b2b2b] text-white px-5 py-3 rounded-[4px] hover:bg-black transition-colors">
+                <a href="#" className="flex items-center gap-3 bg-dark text-white px-5 py-3 rounded-[4px] hover:bg-black transition-colors">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
                     <path d="M3.18 23.76A2 2 0 0 0 5 24c.67 0 1.38-.18 2.01-.56l11.27-6.51-3.5-3.5L3.18 23.76zM22.72 9.32l-3.38-1.95-3.91 3.91 3.91 3.91 3.4-1.96A2.02 2.02 0 0 0 24 11.27a2.02 2.02 0 0 0-1.28-1.95zM1.05.29A2 2 0 0 0 .06 2v20a2 2 0 0 0 .99 1.71l.12.07 11.2-11.2v-.27L1.17.21l-.12.08zm14.59 8.14L4.43.76 3.18.04A2 2 0 0 0 1.05.29l11.32 11.32 3.27-3.27z" />
                   </svg>
@@ -326,7 +361,7 @@ export default async function HomePage() {
                     <div className="text-[14px] font-semibold">Google Play</div>
                   </div>
                 </a>
-                <a href="#" className="flex items-center gap-3 bg-[#2b2b2b] text-white px-5 py-3 rounded-[4px] hover:bg-black transition-colors">
+                <a href="#" className="flex items-center gap-3 bg-dark text-white px-5 py-3 rounded-[4px] hover:bg-black transition-colors">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
                     <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98l-.09.06c-.22.14-2.18 1.27-2.16 3.8.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
                   </svg>
@@ -338,8 +373,8 @@ export default async function HomePage() {
               </div>
             </div>
             <div className="absolute right-0 top-0 h-full w-[400px] flex items-end justify-center pb-0 opacity-20">
-              <div className="w-[140px] h-[280px] bg-[#29a373] rounded-[20px] -rotate-12 mr-8 mb-4 shadow-xl" />
-              <div className="w-[140px] h-[280px] bg-[#196346] rounded-[20px] rotate-6 shadow-xl" />
+              <div className="w-[140px] h-[280px] bg-brand rounded-[20px] -rotate-12 mr-8 mb-4 shadow-xl" />
+              <div className="w-[140px] h-[280px] bg-brand-hover rounded-[20px] rotate-6 shadow-xl" />
             </div>
           </div>
         </section>
@@ -352,13 +387,48 @@ export default async function HomePage() {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
+function MedicationCard({
+  id,
+  name,
+  imageUrl,
+  minPrice,
+}: { id: number; name: string; imageUrl: string | null; minPrice: number | null }) {
+  return (
+    <div className="rounded-[4px] border border-gray-border hover:border-brand transition-colors flex flex-col overflow-hidden">
+      <div className="h-[120px] bg-gray-bg flex items-center justify-center shrink-0">
+        {imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={imageUrl} alt={name} className="w-full h-full object-contain p-2" />
+        ) : (
+          <svg width="48" height="48" viewBox="0 0 32 32" fill="none">
+            <circle cx="16" cy="16" r="15" fill="#eaf6f1" />
+            <path d="M10 16h12M16 10v12" stroke="#29a373" strokeWidth="2.5" strokeLinecap="round" />
+          </svg>
+        )}
+      </div>
+      <div className="p-3 flex flex-col gap-2 flex-1">
+        <p className="text-dark text-[15px] font-semibold leading-snug line-clamp-2 flex-1">{name}</p>
+        {minPrice !== null && (
+          <p className="text-brand text-[16px] font-semibold">от {minPrice.toFixed(2)} р.</p>
+        )}
+        <Link
+          href={`/search?q=${encodeURIComponent(name)}`}
+          className="inline-flex items-center justify-center h-[36px] border border-brand text-brand text-[14px] font-semibold rounded-[4px] hover:bg-brand hover:text-white transition-colors"
+        >
+          Найти в аптеке
+        </Link>
+      </div>
+    </div>
+  )
+}
+
 function ArticleCard({ title, tall = false }: { title: string; tall?: boolean }) {
   return (
-    <div className="rounded-[4px] overflow-hidden border border-[#e5eaeb] hover:border-[#29a373] transition-colors group">
-      <div className={`${tall ? "h-[232px]" : "h-[172px]"} bg-[#f5f5f5]`} />
+    <div className="rounded-[4px] overflow-hidden border border-gray-border hover:border-brand transition-colors group">
+      <div className={`${tall ? "h-[232px]" : "h-[172px]"} bg-gray-bg`} />
       <div className="p-4">
-        <p className="text-[#2b2b2b] text-[15px] font-semibold leading-snug mb-3 line-clamp-3">{title}</p>
-        <Link href="#" className="text-[#29a373] text-[15px] font-semibold hover:text-[#196346] flex items-center gap-1">
+        <p className="text-dark text-[15px] font-semibold leading-snug mb-3 line-clamp-3">{title}</p>
+        <Link href="#" className="text-brand text-[15px] font-semibold hover:text-brand-hover flex items-center gap-1">
           Подробнее
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
             <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -371,11 +441,11 @@ function ArticleCard({ title, tall = false }: { title: string; tall?: boolean })
 
 function WideArticleCard({ title }: { title: string }) {
   return (
-    <div className="flex rounded-[4px] overflow-hidden border border-[#e5eaeb] hover:border-[#29a373] transition-colors">
-      <div className="w-[282px] shrink-0 bg-[#f5f5f5] h-[172px]" />
+    <div className="flex rounded-[4px] overflow-hidden border border-gray-border hover:border-brand transition-colors">
+      <div className="w-[282px] shrink-0 bg-gray-bg h-[172px]" />
       <div className="flex flex-col justify-between p-5 flex-1">
-        <p className="text-[#2b2b2b] text-[16px] font-semibold leading-snug line-clamp-3">{title}</p>
-        <Link href="#" className="text-[#29a373] text-[15px] font-semibold hover:text-[#196346] flex items-center gap-1">
+        <p className="text-dark text-[16px] font-semibold leading-snug line-clamp-3">{title}</p>
+        <Link href="#" className="text-brand text-[15px] font-semibold hover:text-brand-hover flex items-center gap-1">
           Подробнее
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
             <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -398,35 +468,35 @@ function PharmacyLeaderTable({
   activeIndex?: number
 }) {
   return (
-    <div className="bg-[#f5f5f5] rounded-[4px] overflow-hidden">
-      <div className="bg-[#29a373] px-7 py-3 flex items-center gap-2">
+    <div className="bg-gray-bg rounded-[4px] overflow-hidden">
+      <div className="bg-brand px-7 py-3 flex items-center gap-2">
         <span className="text-white text-[20px] font-semibold">{title}</span>
-        <span className="text-[#d4ede3] text-[15px] font-semibold">{subtitle}</span>
+        <span className="text-brand-muted text-[15px] font-semibold">{subtitle}</span>
       </div>
       <div className="p-7 flex flex-col gap-4">
         {items.map((item, i) => (
           <div
             key={i}
             className={`bg-white flex gap-5 p-4 rounded-[4px] ${
-              i === activeIndex ? "border border-[#29a373]" : ""
+              i === activeIndex ? "border border-brand" : ""
             }`}
           >
-            <div className="w-[92px] h-[92px] shrink-0 border border-[#e5eaeb] rounded-[4px] bg-[#f5f5f5] flex items-center justify-center">
+            <div className="w-[92px] h-[92px] shrink-0 border border-gray-border rounded-[4px] bg-gray-bg flex items-center justify-center">
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
                 <circle cx="16" cy="16" r="15" fill="#eaf6f1" />
                 <path d="M10 16h12M16 10v12" stroke="#29a373" strokeWidth="2.5" strokeLinecap="round" />
               </svg>
             </div>
             <div className="flex flex-col gap-1 flex-1 min-w-0">
-              <p className="text-[#2b2b2b] text-[16px] font-semibold leading-snug">{item.name}</p>
-              <p className="text-[#7a7a7a] text-[15px] leading-relaxed line-clamp-2">{item.address}</p>
-              <p className="text-[#2b2b2b] text-[16px] font-semibold">{item.price}</p>
+              <p className="text-dark text-[16px] font-semibold leading-snug">{item.name}</p>
+              <p className="text-gray text-[15px] leading-relaxed line-clamp-2">{item.address}</p>
+              <p className="text-dark text-[16px] font-semibold">{item.price}</p>
             </div>
           </div>
         ))}
       </div>
       <div className="px-7 pb-4 text-right">
-        <Link href="#" className="text-[#29a373] text-[15px] font-semibold hover:text-[#196346]">
+        <Link href="#" className="text-brand text-[15px] font-semibold hover:text-brand-hover">
           Подробная статистика
         </Link>
       </div>

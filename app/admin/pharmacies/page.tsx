@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
-import { deletePharmacyAction } from "@/lib/actions/pharmacies"
+import { PharmacyDeleteButton } from "@/components/admin/pharmacy-delete-button"
 
 export default async function PharmaciesPage() {
   const pharmacies = await prisma.pharmacy.findMany({
@@ -11,67 +11,52 @@ export default async function PharmaciesPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-[#2b2b2b] text-[28px] font-semibold">Аптеки</h1>
+        <h1 className="text-dark text-[28px] font-semibold">Аптеки</h1>
         <Link
           href="/admin/pharmacies/new"
-          className="h-[40px] px-5 bg-[#29a373] text-white text-[15px] font-semibold rounded-[4px] hover:bg-[#196346] transition-colors flex items-center"
+          className="h-[40px] px-5 bg-brand text-white text-[15px] font-semibold rounded-[4px] hover:bg-brand-hover transition-colors flex items-center"
         >
           + Добавить
         </Link>
       </div>
 
-      <div className="bg-white rounded-[4px] border border-[#e5eaeb] overflow-hidden">
+      <div className="bg-white rounded-[4px] border border-gray-border overflow-hidden">
         <table className="w-full text-[14px]">
-          <thead className="bg-[#f5f5f5] border-b border-[#e5eaeb]">
+          <thead className="bg-gray-bg border-b border-gray-border">
             <tr>
-              <th className="text-left px-4 py-3 text-[#7a7a7a] font-semibold">ID</th>
-              <th className="text-left px-4 py-3 text-[#7a7a7a] font-semibold">Название</th>
-              <th className="text-left px-4 py-3 text-[#7a7a7a] font-semibold">Город</th>
-              <th className="text-left px-4 py-3 text-[#7a7a7a] font-semibold">Телефон</th>
-              <th className="text-left px-4 py-3 text-[#7a7a7a] font-semibold">Позиций</th>
-              <th className="text-left px-4 py-3 text-[#7a7a7a] font-semibold">Действия</th>
+              <th className="text-left px-4 py-3 text-gray font-semibold">ID</th>
+              <th className="text-left px-4 py-3 text-gray font-semibold">Название</th>
+              <th className="text-left px-4 py-3 text-gray font-semibold">Город</th>
+              <th className="text-left px-4 py-3 text-gray font-semibold">Телефон</th>
+              <th className="text-left px-4 py-3 text-gray font-semibold">Позиций</th>
+              <th className="text-left px-4 py-3 text-gray font-semibold">Действия</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#e5eaeb]">
+          <tbody className="divide-y divide-gray-border">
             {pharmacies.map((p) => (
-              <tr key={p.id} className="hover:bg-[#f5f5f5] transition-colors">
-                <td className="px-4 py-3 text-[#7a7a7a]">{p.id}</td>
-                <td className="px-4 py-3 text-[#2b2b2b] font-semibold">{p.name}</td>
-                <td className="px-4 py-3 text-[#2b2b2b]">{p.city}</td>
-                <td className="px-4 py-3 text-[#7a7a7a]">{p.phone ?? "—"}</td>
-                <td className="px-4 py-3 text-[#2b2b2b]">{p._count.stocks}</td>
+              <tr key={p.id} className="hover:bg-gray-bg transition-colors">
+                <td className="px-4 py-3 text-gray">{p.id}</td>
+                <td className="px-4 py-3 text-dark font-semibold">{p.name}</td>
+                <td className="px-4 py-3 text-dark">{p.city}</td>
+                <td className="px-4 py-3 text-gray">{p.phone ?? "—"}</td>
+                <td className="px-4 py-3 text-dark">{p._count.stocks}</td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
                     <Link
                       href={`/admin/pharmacies/${p.id}/edit`}
-                      className="text-[#29a373] hover:text-[#196346] font-semibold"
+                      className="text-brand hover:text-brand-hover font-semibold"
                     >
                       Изменить
                     </Link>
-                    <form
-                      action={async () => {
-                        "use server"
-                        await deletePharmacyAction(p.id)
-                      }}
-                    >
-                      <button
-                        type="submit"
-                        className="text-[#ef4444] hover:text-red-700 font-semibold"
-                        onClick={(e) => {
-                          if (!confirm(`Удалить аптеку "${p.name}"?`)) e.preventDefault()
-                        }}
-                      >
-                        Удалить
-                      </button>
-                    </form>
+                    <PharmacyDeleteButton id={p.id} name={p.name} />
                   </div>
                 </td>
               </tr>
             ))}
             {pharmacies.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-[#7a7a7a]">
-                  Аптек пока нет. <Link href="/admin/pharmacies/new" className="text-[#29a373]">Добавить первую</Link>
+                <td colSpan={6} className="px-4 py-8 text-center text-gray">
+                  Аптек пока нет. <Link href="/admin/pharmacies/new" className="text-brand">Добавить первую</Link>
                 </td>
               </tr>
             )}

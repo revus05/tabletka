@@ -32,12 +32,12 @@ export function StockForm({ action, pharmacies, medications, defaultValues = {} 
       )}
 
       <div className="flex flex-col gap-1.5">
-        <label className="text-[14px] font-semibold text-[#2b2b2b]">Лекарство *</label>
+        <label className="text-[14px] font-semibold text-dark">Лекарство *</label>
         <select
           name="medicationId"
           required
           defaultValue={defaultValues.medicationId}
-          className="h-[44px] px-3 border border-[#e5eaeb] rounded-[4px] text-[15px] outline-none focus:border-[#29a373] transition-colors bg-white"
+          className="h-[44px] px-3 border border-gray-border rounded-[4px] text-[15px] outline-none focus:border-brand transition-colors bg-white"
         >
           <option value="">Выберите лекарство</option>
           {medications.map((m) => (
@@ -47,12 +47,12 @@ export function StockForm({ action, pharmacies, medications, defaultValues = {} 
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label className="text-[14px] font-semibold text-[#2b2b2b]">Аптека *</label>
+        <label className="text-[14px] font-semibold text-dark">Аптека *</label>
         <select
           name="pharmacyId"
           required
           defaultValue={defaultValues.pharmacyId}
-          className="h-[44px] px-3 border border-[#e5eaeb] rounded-[4px] text-[15px] outline-none focus:border-[#29a373] transition-colors bg-white"
+          className="h-[44px] px-3 border border-gray-border rounded-[4px] text-[15px] outline-none focus:border-brand transition-colors bg-white"
         >
           <option value="">Выберите аптеку</option>
           {pharmacies.map((p) => (
@@ -63,7 +63,7 @@ export function StockForm({ action, pharmacies, medications, defaultValues = {} 
 
       <div className="grid grid-cols-3 gap-4">
         <div className="flex flex-col gap-1.5">
-          <label className="text-[14px] font-semibold text-[#2b2b2b]">Цена (руб.) *</label>
+          <label className="text-[14px] font-semibold text-dark">Цена (руб.) *</label>
           <input
             type="number"
             name="price"
@@ -72,29 +72,29 @@ export function StockForm({ action, pharmacies, medications, defaultValues = {} 
             required
             defaultValue={defaultValues.price}
             placeholder="9.90"
-            className="h-[44px] px-3 border border-[#e5eaeb] rounded-[4px] text-[15px] outline-none focus:border-[#29a373] transition-colors"
+            className="h-[44px] px-3 border border-gray-border rounded-[4px] text-[15px] outline-none focus:border-brand transition-colors"
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <label className="text-[14px] font-semibold text-[#2b2b2b]">Кол-во *</label>
+          <label className="text-[14px] font-semibold text-dark">Кол-во *</label>
           <input
             type="number"
             name="quantity"
             min="0"
             required
             defaultValue={defaultValues.quantity ?? 0}
-            className="h-[44px] px-3 border border-[#e5eaeb] rounded-[4px] text-[15px] outline-none focus:border-[#29a373] transition-colors"
+            className="h-[44px] px-3 border border-gray-border rounded-[4px] text-[15px] outline-none focus:border-brand transition-colors"
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <label className="text-[14px] font-semibold text-[#2b2b2b]">Макс. кол-во</label>
+          <label className="text-[14px] font-semibold text-dark">Макс. кол-во</label>
           <input
             type="number"
             name="maxQuantity"
             min="1"
             required
             defaultValue={defaultValues.maxQuantity ?? 100}
-            className="h-[44px] px-3 border border-[#e5eaeb] rounded-[4px] text-[15px] outline-none focus:border-[#29a373] transition-colors"
+            className="h-[44px] px-3 border border-gray-border rounded-[4px] text-[15px] outline-none focus:border-brand transition-colors"
           />
         </div>
       </div>
@@ -105,22 +105,22 @@ export function StockForm({ action, pharmacies, medications, defaultValues = {} 
           name="inStock"
           value="on"
           defaultChecked={defaultValues.inStock ?? true}
-          className="w-4 h-4 accent-[#29a373]"
+          className="w-4 h-4 accent-brand"
         />
-        <span className="text-[15px] text-[#2b2b2b] font-semibold">В наличии</span>
+        <span className="text-[15px] text-dark font-semibold">В наличии</span>
       </label>
 
       <div className="flex gap-3 pt-2">
         <button
           type="submit"
           disabled={isPending}
-          className="h-[44px] px-8 bg-[#29a373] text-white text-[16px] font-semibold rounded-[4px] hover:bg-[#196346] transition-colors disabled:opacity-60"
+          className="h-[44px] px-8 bg-brand text-white text-[16px] font-semibold rounded-[4px] hover:bg-brand-hover transition-colors disabled:opacity-60"
         >
           {isPending ? "Сохранение..." : "Сохранить"}
         </button>
         <a
           href="/admin/stock"
-          className="h-[44px] px-6 border border-[#e5eaeb] text-[#7a7a7a] text-[15px] font-semibold rounded-[4px] hover:border-[#29a373] hover:text-[#29a373] transition-colors flex items-center"
+          className="h-[44px] px-6 border border-gray-border text-gray text-[15px] font-semibold rounded-[4px] hover:border-brand hover:text-brand transition-colors flex items-center"
         >
           Отмена
         </a>

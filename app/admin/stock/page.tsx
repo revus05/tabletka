@@ -14,40 +14,40 @@ export default async function StockPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-[#2b2b2b] text-[28px] font-semibold">Остатки</h1>
+        <h1 className="text-dark text-[28px] font-semibold">Остатки</h1>
         <Link
           href="/admin/stock/new"
-          className="h-[40px] px-5 bg-[#29a373] text-white text-[15px] font-semibold rounded-[4px] hover:bg-[#196346] transition-colors flex items-center"
+          className="h-[40px] px-5 bg-brand text-white text-[15px] font-semibold rounded-[4px] hover:bg-brand-hover transition-colors flex items-center"
         >
           + Добавить
         </Link>
       </div>
 
-      <div className="bg-white rounded-[4px] border border-[#e5eaeb] overflow-hidden">
+      <div className="bg-white rounded-[4px] border border-gray-border overflow-hidden">
         <table className="w-full text-[14px]">
-          <thead className="bg-[#f5f5f5] border-b border-[#e5eaeb]">
+          <thead className="bg-gray-bg border-b border-gray-border">
             <tr>
-              <th className="text-left px-4 py-3 text-[#7a7a7a] font-semibold">Лекарство</th>
-              <th className="text-left px-4 py-3 text-[#7a7a7a] font-semibold">Аптека</th>
-              <th className="text-left px-4 py-3 text-[#7a7a7a] font-semibold">Цена</th>
-              <th className="text-left px-4 py-3 text-[#7a7a7a] font-semibold">Кол-во</th>
-              <th className="text-left px-4 py-3 text-[#7a7a7a] font-semibold">Наличие</th>
-              <th className="text-left px-4 py-3 text-[#7a7a7a] font-semibold">Действия</th>
+              <th className="text-left px-4 py-3 text-gray font-semibold">Лекарство</th>
+              <th className="text-left px-4 py-3 text-gray font-semibold">Аптека</th>
+              <th className="text-left px-4 py-3 text-gray font-semibold">Цена</th>
+              <th className="text-left px-4 py-3 text-gray font-semibold">Кол-во</th>
+              <th className="text-left px-4 py-3 text-gray font-semibold">Наличие</th>
+              <th className="text-left px-4 py-3 text-gray font-semibold">Действия</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#e5eaeb]">
+          <tbody className="divide-y divide-gray-border">
             {stocks.map((s) => (
-              <tr key={s.id} className="hover:bg-[#f5f5f5] transition-colors">
-                <td className="px-4 py-3 text-[#2b2b2b] font-semibold">{s.medication.name}</td>
-                <td className="px-4 py-3 text-[#2b2b2b]">
+              <tr key={s.id} className="hover:bg-gray-bg transition-colors">
+                <td className="px-4 py-3 text-dark font-semibold">{s.medication.name}</td>
+                <td className="px-4 py-3 text-dark">
                   {s.pharmacy.name}
-                  <span className="text-[#7a7a7a] text-[12px] ml-1">({s.pharmacy.city})</span>
+                  <span className="text-gray text-[12px] ml-1">({s.pharmacy.city})</span>
                 </td>
-                <td className="px-4 py-3 text-[#2b2b2b]">{Number(s.price).toFixed(2)} р.</td>
-                <td className="px-4 py-3 text-[#2b2b2b]">{s.quantity} / {s.maxQuantity}</td>
+                <td className="px-4 py-3 text-dark">{Number(s.price).toFixed(2)} р.</td>
+                <td className="px-4 py-3 text-dark">{s.quantity} / {s.maxQuantity}</td>
                 <td className="px-4 py-3">
                   {s.inStock ? (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[12px] font-semibold bg-[#eaf6f1] text-[#29a373]">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[12px] font-semibold bg-brand-light text-brand">
                       В наличии
                     </span>
                   ) : (
@@ -60,7 +60,7 @@ export default async function StockPage() {
                   <div className="flex items-center gap-3">
                     <Link
                       href={`/admin/stock/${s.id}/edit`}
-                      className="text-[#29a373] hover:text-[#196346] font-semibold"
+                      className="text-brand hover:text-brand-hover font-semibold"
                     >
                       Изменить
                     </Link>
@@ -70,7 +70,7 @@ export default async function StockPage() {
                         await deleteStockAction(s.id)
                       }}
                     >
-                      <button type="submit" className="text-[#ef4444] hover:text-red-700 font-semibold">
+                      <button type="submit" className="text-error hover:text-red-700 font-semibold">
                         Удалить
                       </button>
                     </form>
@@ -80,9 +80,9 @@ export default async function StockPage() {
             ))}
             {stocks.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-[#7a7a7a]">
+                <td colSpan={6} className="px-4 py-8 text-center text-gray">
                   Нет ни одного остатка.{" "}
-                  <Link href="/admin/stock/new" className="text-[#29a373]">Добавить</Link>
+                  <Link href="/admin/stock/new" className="text-brand">Добавить</Link>
                 </td>
               </tr>
             )}

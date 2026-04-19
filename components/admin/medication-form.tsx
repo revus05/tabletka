@@ -28,52 +28,52 @@ export function MedicationForm({ action, defaultValues = {} }: MedicationFormPro
       )}
 
       <div className="flex flex-col gap-1.5">
-        <label className="text-[14px] font-semibold text-[#2b2b2b]">Название *</label>
+        <label className="text-[14px] font-semibold text-dark">Название *</label>
         <input
           type="text"
           name="name"
           required
           defaultValue={defaultValues.name}
           placeholder="Синупрет таблетки"
-          className="h-[44px] px-3 border border-[#e5eaeb] rounded-[4px] text-[15px] outline-none focus:border-[#29a373] transition-colors"
+          className="h-[44px] px-3 border border-gray-border rounded-[4px] text-[15px] outline-none focus:border-brand transition-colors"
         />
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label className="text-[14px] font-semibold text-[#2b2b2b]">МНН (генерическое название)</label>
+        <label className="text-[14px] font-semibold text-dark">МНН (генерическое название)</label>
         <input
           type="text"
           name="genericName"
           defaultValue={defaultValues.genericName}
           placeholder="Экстракт травы вербены"
-          className="h-[44px] px-3 border border-[#e5eaeb] rounded-[4px] text-[15px] outline-none focus:border-[#29a373] transition-colors"
+          className="h-[44px] px-3 border border-gray-border rounded-[4px] text-[15px] outline-none focus:border-brand transition-colors"
         />
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label className="text-[14px] font-semibold text-[#2b2b2b]">Производитель</label>
+        <label className="text-[14px] font-semibold text-dark">Производитель</label>
         <input
           type="text"
           name="manufacturer"
           defaultValue={defaultValues.manufacturer}
           placeholder="Bionorica SE, Германия"
-          className="h-[44px] px-3 border border-[#e5eaeb] rounded-[4px] text-[15px] outline-none focus:border-[#29a373] transition-colors"
+          className="h-[44px] px-3 border border-gray-border rounded-[4px] text-[15px] outline-none focus:border-brand transition-colors"
         />
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label className="text-[14px] font-semibold text-[#2b2b2b]">Описание</label>
+        <label className="text-[14px] font-semibold text-dark">Описание</label>
         <textarea
           name="description"
           defaultValue={defaultValues.description}
           rows={4}
           placeholder="Описание препарата..."
-          className="px-3 py-2 border border-[#e5eaeb] rounded-[4px] text-[15px] outline-none focus:border-[#29a373] transition-colors resize-none"
+          className="px-3 py-2 border border-gray-border rounded-[4px] text-[15px] outline-none focus:border-brand transition-colors resize-none"
         />
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label className="text-[14px] font-semibold text-[#2b2b2b]">Изображение</label>
+        <label className="text-[14px] font-semibold text-dark">Изображение</label>
         <ImageUpload
           name="imageUrl"
           value={imageUrl}
@@ -86,13 +86,13 @@ export function MedicationForm({ action, defaultValues = {} }: MedicationFormPro
         <button
           type="submit"
           disabled={isPending}
-          className="h-[44px] px-8 bg-[#29a373] text-white text-[16px] font-semibold rounded-[4px] hover:bg-[#196346] transition-colors disabled:opacity-60"
+          className="h-[44px] px-8 bg-brand text-white text-[16px] font-semibold rounded-[4px] hover:bg-brand-hover transition-colors disabled:opacity-60"
         >
           {isPending ? "Сохранение..." : "Сохранить"}
         </button>
         <a
           href="/admin/medications"
-          className="h-[44px] px-6 border border-[#e5eaeb] text-[#7a7a7a] text-[15px] font-semibold rounded-[4px] hover:border-[#29a373] hover:text-[#29a373] transition-colors flex items-center"
+          className="h-[44px] px-6 border border-gray-border text-gray text-[15px] font-semibold rounded-[4px] hover:border-brand hover:text-brand transition-colors flex items-center"
         >
           Отмена
         </a>

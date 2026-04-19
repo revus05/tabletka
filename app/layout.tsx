@@ -8,6 +8,7 @@ import Header from "@/components/header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { getSession } from "@/lib/session";
 import { cn } from "@/lib/utils";
+import { prisma } from "@/lib/prisma";
 
 const roboto = Roboto({
   subsets: ["latin", "cyrillic"],
@@ -31,6 +32,12 @@ export default async function RootLayout({
 
   const session = isAdmin ? null : await getSession();
 
+  // Fetch counts for header
+  const [pharmacyCount, medicationCount] = await Promise.all([
+    prisma.pharmacy.count(),
+    prisma.medication.count(),
+  ]);
+
   return (
     <html
       lang="ru"
@@ -39,7 +46,7 @@ export default async function RootLayout({
     >
       <body>
         <ThemeProvider>
-          {!isAdmin && <Header user={session} />}
+          {<Header user={session} pharmacyCount={pharmacyCount} medicationCount={medicationCount} />}
           {children}
         </ThemeProvider>
       </body>

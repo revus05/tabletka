@@ -37,13 +37,13 @@ export function ImageUpload({ value, onChange, folder, name }: ImageUploadProps)
       <input type="hidden" name={name} value={value} />
 
       {value && (
-        <div className="relative w-[120px] h-[120px] border border-[#e5eaeb] rounded-[4px] overflow-hidden bg-[#f5f5f5]">
+        <div className="relative w-[120px] h-[120px] border border-gray-border rounded-[4px] overflow-hidden bg-gray-bg">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={value} alt="Preview" className="w-full h-full object-contain p-1" />
           <button
             type="button"
             onClick={() => onChange("")}
-            className="absolute top-1 right-1 w-5 h-5 bg-[#ef4444] text-white rounded-full text-[11px] flex items-center justify-center hover:bg-red-600"
+            className="absolute top-1 right-1 w-5 h-5 bg-error text-white rounded-full text-[11px] flex items-center justify-center hover:bg-red-600"
           >
             ×
           </button>
@@ -54,7 +54,7 @@ export function ImageUpload({ value, onChange, folder, name }: ImageUploadProps)
         type="button"
         disabled={uploading}
         onClick={() => inputRef.current?.click()}
-        className="h-[40px] px-4 border border-dashed border-[#29a373] text-[#29a373] text-[14px] rounded-[4px] hover:bg-[#eaf6f1] transition-colors disabled:opacity-60 w-fit"
+        className="h-[40px] px-4 border border-dashed border-brand text-brand text-[14px] rounded-[4px] hover:bg-brand-light transition-colors disabled:opacity-60 w-fit"
       >
         {uploading ? "Загружается..." : value ? "Заменить изображение" : "Загрузить изображение"}
       </button>
@@ -71,7 +71,7 @@ export function ImageUpload({ value, onChange, folder, name }: ImageUploadProps)
         }}
       />
 
-      {error && <p className="text-[13px] text-[#ef4444]">{error}</p>}
+      {error && <p className="text-[13px] text-error">{error}</p>}
     </div>
   )
 }

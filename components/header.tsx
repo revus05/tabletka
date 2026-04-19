@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
@@ -11,9 +11,12 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 type HeaderProps = {
   user?: JWTPayload | null;
+  pharmacyCount?: number;
+  medicationCount?: number;
 };
 
-function Header({ user }: HeaderProps) {
+function Header({ user, pharmacyCount = 0, medicationCount = 0 }: HeaderProps) {
+  const pathname = usePathname()
   const router = useRouter();
   const [query, setQuery] = useState("");
 
@@ -24,6 +27,10 @@ function Header({ user }: HeaderProps) {
     }
   }
 
+  const isAdmin = pathname.startsWith("/admin");
+
+  if (isAdmin) return null;
+
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm">
       {/* Main header row */}
@@ -32,7 +39,7 @@ function Header({ user }: HeaderProps) {
           {/* Logo */}
           <Link
             href="/"
-            className="shrink-0 flex items-center gap-2 text-[#29a373]"
+            className="shrink-0 flex items-center gap-2 text-brand"
           >
             <Logo />
           </Link>
@@ -44,7 +51,7 @@ function Header({ user }: HeaderProps) {
           >
             <button
               type="button"
-              className="flex items-center gap-2 shrink-0 h-[48px] px-4 bg-[#29a373] text-white rounded-[4px] text-[15px] font-semibold hover:bg-[#196346] transition-colors"
+              className="flex items-center gap-2 shrink-0 h-[48px] px-4 bg-brand text-white rounded-[4px] text-[15px] font-semibold hover:bg-brand-hover transition-colors"
             >
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <rect x="1" y="1" width="7" height="7" rx="1" fill="white" />
@@ -55,15 +62,15 @@ function Header({ user }: HeaderProps) {
               Каталог
             </button>
 
-            <div className="flex flex-1 items-center border border-[#29a373] rounded-[4px] h-[48px] overflow-hidden">
-              <div className="flex items-center gap-1 h-full px-3 bg-[#eaf6f1] border-r border-[#29a373] shrink-0">
+            <div className="flex flex-1 items-center border border-brand rounded-[4px] h-[48px] overflow-hidden">
+              <div className="flex items-center gap-1 h-full px-3 bg-brand-light border-r border-brand shrink-0">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                   <path
                     d="M8 1C5.24 1 3 3.24 3 6c0 4.25 5 9 5 9s5-4.75 5-9c0-2.76-2.24-5-5-5zm0 6.75A1.75 1.75 0 1 1 8 4.25a1.75 1.75 0 0 1 0 3.5z"
                     fill="#29a373"
                   />
                 </svg>
-                <span className="text-[#29a373] text-[15px] whitespace-nowrap">
+                <span className="text-brand text-[15px] whitespace-nowrap">
                   Все регионы
                 </span>
               </div>
@@ -72,11 +79,11 @@ function Header({ user }: HeaderProps) {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Поиск лекарств"
-                className="flex-1 px-3 text-[15px] text-[#2b2b2b] outline-none bg-transparent"
+                className="flex-1 px-3 text-[15px] text-dark outline-none bg-transparent"
               />
               <button
                 type="submit"
-                className="flex items-center justify-center h-full w-12 bg-[#29a373] hover:bg-[#196346] transition-colors shrink-0"
+                className="flex items-center justify-center h-full w-12 bg-brand hover:bg-brand-hover transition-colors shrink-0"
               >
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                   <circle
@@ -99,7 +106,7 @@ function Header({ user }: HeaderProps) {
 
           {/* Right icons */}
           <div className="flex items-center gap-5 shrink-0">
-            <button className="flex flex-col items-center gap-1 text-[13px] text-[#2b2b2b]">
+            <button className="flex flex-col items-center gap-1 text-[13px] text-dark">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                 <rect
                   x="3"
@@ -140,7 +147,7 @@ function Header({ user }: HeaderProps) {
               </svg>
               Мультипоиск
             </button>
-            <button className="flex flex-col items-center gap-1 text-[13px] text-[#2b2b2b]">
+            <button className="flex flex-col items-center gap-1 text-[13px] text-dark">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M12 2C8.5 2 6 4.5 6 8c0 5.25 6 12 6 12s6-6.75 6-12c0-3.5-2.5-6-6-6z"
@@ -177,7 +184,7 @@ function Header({ user }: HeaderProps) {
                           strokeLinecap="round"
                         />
                       </svg>
-                      <span className="text-[13px] text-[#2b2b2b] max-w-[80px] truncate">
+                      <span className="text-[13px] text-dark max-w-[80px] truncate">
                         {user.name}
                       </span>
                     </div>
@@ -206,7 +213,7 @@ function Header({ user }: HeaderProps) {
                         <Button
                           type="submit"
                           variant="ghost"
-                          className="w-full justify-start text-[#ef4444] hover:text-[#ef4444] hover:bg-red-50"
+                          className="w-full justify-start text-error hover:text-error hover:bg-red-50"
                         >
                           Выйти
                         </Button>
@@ -218,7 +225,7 @@ function Header({ user }: HeaderProps) {
             ) : (
               <Link
                 href="/auth/login"
-                className="flex flex-col items-center gap-1 text-[13px] text-[#2b2b2b] hover:text-[#29a373] transition-colors"
+                className="flex flex-col items-center gap-1 text-[13px] text-dark hover:text-brand transition-colors"
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                   <circle
@@ -243,31 +250,31 @@ function Header({ user }: HeaderProps) {
       </div>
 
       {/* Secondary nav */}
-      <div className="bg-[#eaf6f1] border-t border-[#d4ede3]">
+      <div className="bg-brand-light border-t border-brand-muted">
         <div className="mx-auto max-w-[1200px] px-5">
           <div className="flex h-[44px] items-center justify-between">
             <nav className="flex items-center gap-8">
               {[
-                "Аптеки",
-                "Производители",
-                "Бренды",
-                "МНН",
-                "Вопрос/Ответ",
-                "Помощь",
+                { label: "Аптеки", href: "/pharmacies" },
+                { label: "Производители", href: "#" },
+                { label: "Бренды", href: "#" },
+                { label: "МНН", href: "#" },
+                { label: "Вопрос/Ответ", href: "#" },
+                { label: "Помощь", href: "#" },
               ].map((item) => (
                 <Link
-                  key={item}
-                  href="#"
-                  className="text-[15px] font-semibold text-[#2b2b2b] hover:text-[#29a373] transition-colors"
+                  key={item.label}
+                  href={item.href}
+                  className="text-[15px] font-semibold text-dark hover:text-brand transition-colors"
                 >
-                  {item}
+                  {item.label}
                 </Link>
               ))}
             </nav>
-            <div className="flex items-center gap-5 text-[10px] font-semibold uppercase text-[#7a7a7a]">
+            <div className="flex items-center gap-5 text-[10px] font-semibold uppercase text-gray">
               <div className="flex items-center gap-1">
-                <span className="text-[#29a373] text-[20px] font-normal">
-                  4 206
+                <span className="text-brand text-[20px] font-normal">
+                  {pharmacyCount.toLocaleString("ru-RU")}
                 </span>
                 <span className="leading-tight">
                   аптек
@@ -275,13 +282,13 @@ function Header({ user }: HeaderProps) {
                 </span>
               </div>
               <div className="flex items-center gap-1">
-                <span className="text-[#29a373] text-[20px] font-normal">
-                  422 887
+                <span className="text-brand text-[20px] font-normal">
+                  {medicationCount.toLocaleString("ru-RU")}
                 </span>
                 <span className="leading-tight">
-                  запросов
+                  товаров
                   <br />
-                  вчера
+                  в наличии
                 </span>
               </div>
             </div>

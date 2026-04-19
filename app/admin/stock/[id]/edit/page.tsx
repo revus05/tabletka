@@ -19,14 +19,14 @@ export default async function EditStockPage({ params }: Props) {
   return (
     <div>
       <div className="flex items-center gap-3 mb-6">
-        <Link href="/admin/stock" className="text-[#7a7a7a] hover:text-[#29a373] text-[14px]">
+        <Link href="/admin/stock" className="text-gray hover:text-brand text-[14px]">
           ← Остатки
         </Link>
-        <span className="text-[#7a7a7a]">/</span>
-        <h1 className="text-[#2b2b2b] text-[24px] font-semibold">Редактировать остаток</h1>
+        <span className="text-gray">/</span>
+        <h1 className="text-dark text-[24px] font-semibold">Редактировать остаток</h1>
       </div>
 
-      <div className="bg-white rounded-[4px] border border-[#e5eaeb] p-6">
+      <div className="bg-white rounded-[4px] border border-gray-border p-6">
         <StockForm
           action={upsertStockAction}
           pharmacies={pharmacies}

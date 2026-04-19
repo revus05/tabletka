@@ -10,25 +10,25 @@ export default async function AdminDashboard() {
   ])
 
   const stats = [
-    { label: "Аптеки", value: pharmacyCount, href: "/admin/pharmacies", color: "bg-[#29a373]" },
-    { label: "Лекарства", value: medicationCount, href: "/admin/medications", color: "bg-[#0066cc]" },
-    { label: "Пользователи", value: userCount, href: "#", color: "bg-[#f59e0b]" },
-    { label: "В наличии позиций", value: stockCount, href: "/admin/stock", color: "bg-[#196346]" },
+    { label: "Аптеки", value: pharmacyCount, href: "/admin/pharmacies", color: "bg-brand" },
+    { label: "Лекарства", value: medicationCount, href: "/admin/medications", color: "bg-info" },
+    { label: "Пользователи", value: userCount, href: "#", color: "bg-warning" },
+    { label: "В наличии позиций", value: stockCount, href: "/admin/stock", color: "bg-brand-hover" },
   ]
 
   return (
     <div>
-      <h1 className="text-[#2b2b2b] text-[28px] font-semibold mb-6">Дашборд</h1>
+      <h1 className="text-dark text-[28px] font-semibold mb-6">Дашборд</h1>
 
       <div className="grid grid-cols-2 gap-4 mb-8">
         {stats.map((s) => (
           <Link
             key={s.label}
             href={s.href}
-            className="bg-white rounded-[4px] border border-[#e5eaeb] p-6 hover:border-[#29a373] transition-colors"
+            className="bg-white rounded-[4px] border border-gray-border p-6 hover:border-brand transition-colors"
           >
-            <p className="text-[#7a7a7a] text-[14px] mb-2">{s.label}</p>
-            <p className="text-[#2b2b2b] text-[40px] font-semibold leading-none">{s.value}</p>
+            <p className="text-gray text-[14px] mb-2">{s.label}</p>
+            <p className="text-dark text-[40px] font-semibold leading-none">{s.value}</p>
           </Link>
         ))}
       </div>
@@ -36,19 +36,19 @@ export default async function AdminDashboard() {
       <div className="grid grid-cols-3 gap-4">
         <Link
           href="/admin/pharmacies/new"
-          className="flex items-center justify-center gap-2 h-[56px] bg-[#29a373] text-white text-[15px] font-semibold rounded-[4px] hover:bg-[#196346] transition-colors"
+          className="flex items-center justify-center gap-2 h-[56px] bg-brand text-white text-[15px] font-semibold rounded-[4px] hover:bg-brand-hover transition-colors"
         >
           + Добавить аптеку
         </Link>
         <Link
           href="/admin/medications/new"
-          className="flex items-center justify-center gap-2 h-[56px] bg-white border border-[#29a373] text-[#29a373] text-[15px] font-semibold rounded-[4px] hover:bg-[#eaf6f1] transition-colors"
+          className="flex items-center justify-center gap-2 h-[56px] bg-white border border-brand text-brand text-[15px] font-semibold rounded-[4px] hover:bg-brand-light transition-colors"
         >
           + Добавить лекарство
         </Link>
         <Link
           href="/admin/stock/new"
-          className="flex items-center justify-center gap-2 h-[56px] bg-white border border-[#e5eaeb] text-[#2b2b2b] text-[15px] font-semibold rounded-[4px] hover:border-[#29a373] transition-colors"
+          className="flex items-center justify-center gap-2 h-[56px] bg-white border border-gray-border text-dark text-[15px] font-semibold rounded-[4px] hover:border-brand transition-colors"
         >
           + Добавить остаток
         </Link>
