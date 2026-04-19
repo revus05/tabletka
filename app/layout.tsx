@@ -2,13 +2,14 @@ import { Roboto } from "next/font/google";
 import { headers } from "next/headers";
 
 import "./globals.css";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import Header from "@/components/header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { getSession } from "@/lib/session";
 import { cn } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
+import { PwaRegister } from "./pwa-register";
 
 const roboto = Roboto({
   subsets: ["latin", "cyrillic"],
@@ -16,9 +17,22 @@ const roboto = Roboto({
   variable: "--font-sans",
 });
 
+export const viewport: Viewport = {
+  themeColor: "#29a373",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export const metadata: Metadata = {
   title: "Таблетка.бай — поиск лекарств в аптеках",
   description: "Сравните цены на лекарства в аптеках Беларуси",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Таблетка",
+  },
 };
 
 export default async function RootLayout({
@@ -49,6 +63,7 @@ export default async function RootLayout({
           {<Header user={session} pharmacyCount={pharmacyCount} medicationCount={medicationCount} />}
           {children}
         </ThemeProvider>
+        <PwaRegister />
       </body>
     </html>
   );
