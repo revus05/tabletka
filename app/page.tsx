@@ -1,19 +1,83 @@
 import Link from "next/link"
 import { Footer } from "@/components/footer"
 import { prisma } from "@/lib/prisma"
+import Image from "next/image"
 // Header is rendered in app/layout.tsx
 
 // ─── Static data ──────────────────────────────────────────────────────────────
 
 const articles = [
-  { id: 1, title: "Apteka.by — заказ лекарств, БАДов и аптечной косметики по всей Беларуси" },
-  { id: 2, title: "Средства снижающие проницаемость капилляров" },
-  { id: 3, title: "Невидимый за 1 секунду" },
-  { id: 4, title: "Болеть — не наша традиция!" },
-  { id: 5, title: "Следуй за весной" },
-  { id: 6, title: "Зачем коже лица нужен ретинол" },
-  { id: 7, title: "Как защититься от клещей" },
-  { id: 8, title: "Витамины группы B и зачем мы их пьем" },
+  { id: 1, title: "Новый сервис для удобства наших покупателей", imageUrl: "https://tabletka.by/img/article/article_107-1728981493.jpg" },
+  { id: 2, title: "Аптеки ФармОстров и АстраФарма — территория доступных цен!", imageUrl: "https://tabletka.by/img/article/article_108-1676872991.jpeg" },
+  { id: 3, title: "Доставка БАДов и витаминов на дом", imageUrl: "https://tabletka.by/img/article/article_109-1722259069.jpg" },
+  { id: 4, title: "Dr.DINNO — передовые технологии в средствах личной гигиены", imageUrl: "https://tabletka.by/img/article/article_110-1761917024.png" },
+  { id: 5, title: "Доставка аптечных товаров через Яндекс GO", imageUrl: "https://tabletka.by/img/article/article_111-1775198858.png" },
+  { id: 6, title: "Акции апреля со скидкой до 30% в АльфаАптеке", imageUrl: "https://tabletka.by/img/article/article_0-1774605337.jpg" },
+  { id: 7, title: "OMRON вернулся! Скидки на товары для вашего здоровья", imageUrl: "https://tabletka.by/img/article/article_103-1775569713.jpg" },
+  { id: 8, title: "Скидки в магазинах медтехники «Скажи здоровью Да»", imageUrl: "https://tabletka.by/img/article/article_104-1775224328.jpg" },
+]
+
+const staticPromotions = [
+  {
+    id: "s1",
+    title: "169 — номер, который экономит время",
+    imageUrl: "https://tabletka.by/img/network_action/action_218-1774960230.jpg",
+    pharmacy: "tabletka.by",
+    endDate: "2026-05-31",
+  },
+  {
+    id: "s2",
+    title: "Специальное предложение в аптеках Брестского РУП «Фармация»",
+    imageUrl: "https://tabletka.by/img/network_action/action_212-1769515371.jpg",
+    pharmacy: "Брестское РУП Фармация",
+    endDate: "2026-05-31",
+  },
+  {
+    id: "s3",
+    title: "Скидки в аптеках Могилёвского РУП «Фармация»",
+    imageUrl: "https://tabletka.by/img/network_action/action_12-1676967501.jpg",
+    pharmacy: "Могилёвское РУП Фармация",
+    endDate: "2026-05-31",
+  },
+]
+
+const staticNews = [
+  {
+    id: "n1",
+    title: "Новый сервис для удобства наших покупателей",
+    imageUrl: "https://tabletka.by/img/article/article_107-1728981493.jpg",
+    publishedAt: "2024-10-15",
+  },
+  {
+    id: "n2",
+    title: "Доставка БАДов и витаминов на дом",
+    imageUrl: "https://tabletka.by/img/article/article_109-1722259069.jpg",
+    publishedAt: "2024-07-29",
+  },
+  {
+    id: "n3",
+    title: "Доставка аптечных товаров через Яндекс GO",
+    imageUrl: "https://tabletka.by/img/article/article_111-1775198858.png",
+    publishedAt: "2025-03-01",
+  },
+  {
+    id: "n4",
+    title: "Акции апреля со скидкой до 30% в АльфаАптеке",
+    imageUrl: "https://tabletka.by/img/article/article_0-1774605337.jpg",
+    publishedAt: "2026-04-01",
+  },
+  {
+    id: "n5",
+    title: "OMRON вернулся! Скидки на товары для вашего здоровья",
+    imageUrl: "https://tabletka.by/img/article/article_103-1775569713.jpg",
+    publishedAt: "2026-04-10",
+  },
+  {
+    id: "n6",
+    title: "Скидки в магазинах медтехники «Скажи здоровью Да»",
+    imageUrl: "https://tabletka.by/img/article/article_104-1775224328.jpg",
+    publishedAt: "2026-04-15",
+  },
 ]
 
 // ─── Page ────────────────────────────────────────────────────────────────────
@@ -58,7 +122,7 @@ export default async function HomePage() {
     .map((p) => {
       const prices = p.stocks.map((s) => Number(s.price))
       const avg = prices.length ? prices.reduce((a, b) => a + b, 0) / prices.length : 0
-      return { name: p.name, address: `${p.city}, ${p.address}`, price: `${avg.toFixed(2)} р.` }
+      return { name: p.name, address: `${p.city}, ${p.address}`, price: `${avg.toFixed(2)} р.`, logoUrl: p.logoUrl }
     })
     .sort((a, b) => Number.parseFloat(a.price) - Number.parseFloat(b.price))
     .slice(0, 5)
@@ -212,17 +276,17 @@ export default async function HomePage() {
               </Link>
             </div>
             {articles.slice(0, 3).map((article) => (
-              <ArticleCard key={article.id} title={article.title} />
+              <ArticleCard key={article.id} title={article.title} imageUrl={article.imageUrl} />
             ))}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             {articles.slice(3, 5).map((article) => (
-              <WideArticleCard key={article.id} title={article.title} />
+              <WideArticleCard key={article.id} title={article.title} imageUrl={article.imageUrl} />
             ))}
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {articles.slice(5, 8).map((article) => (
-              <ArticleCard key={article.id} title={article.title} tall />
+              <ArticleCard key={article.id} title={article.title} imageUrl={article.imageUrl} tall />
             ))}
           </div>
         </section>
@@ -247,34 +311,92 @@ export default async function HomePage() {
         )}
 
         {/* ── Promotions ── */}
-        {promotions.length > 0 && (
-          <section className="mx-auto max-w-[1200px] px-5 mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-dark text-[24px] font-semibold">Акции аптечных сетей</h2>
-              <Link href="#" className="text-brand text-[15px] font-semibold hover:text-brand-hover">
-                Все акции
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {promotions.map((promo) => (
-                <div key={promo.id} className="rounded-[4px] overflow-hidden border border-gray-border">
-                  <div className="h-[234px] bg-brand-light flex items-center justify-center">
-                    {promo.imageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={promo.imageUrl} alt={promo.title} className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-[22px] font-bold text-brand">АКЦИЯ</span>
-                    )}
+        {(() => {
+          const displayPromotions = promotions.length > 0
+            ? promotions.map((p) => ({
+                id: String(p.id),
+                title: p.title,
+                imageUrl: p.imageUrl,
+                pharmacy: p.pharmacy?.name ?? "",
+                endDate: p.endDate ? String(p.endDate) : null,
+              }))
+            : staticPromotions
+          return (
+            <section className="mx-auto max-w-[1200px] px-5 mb-8">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-dark text-[24px] font-semibold">Акции аптечных сетей</h2>
+                <Link href="#" className="text-brand text-[15px] font-semibold hover:text-brand-hover">
+                  Все акции
+                </Link>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {displayPromotions.map((promo) => (
+                  <div key={promo.id} className="rounded-[4px] overflow-hidden border border-gray-border">
+                    <div className="h-[234px] bg-brand-light flex items-center justify-center">
+                      {promo.imageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={promo.imageUrl} alt={promo.title} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-[22px] font-bold text-brand">АКЦИЯ</span>
+                      )}
+                    </div>
+                    <div className="p-4">
+                      <p className="text-dark text-[15px] font-semibold leading-snug mb-4">{promo.title}</p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray text-[13px]">
+                          {promo.endDate
+                            ? `до ${new Date(promo.endDate).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" })}`
+                            : ""}
+                        </span>
+                        <Link href="#" className="text-brand text-[15px] font-semibold hover:text-brand-hover flex items-center gap-1">
+                          Подробнее
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </Link>
+                      </div>
+                    </div>
                   </div>
-                  <div className="p-4">
-                    <p className="text-dark text-[15px] font-semibold leading-snug mb-4">{promo.title}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray text-[13px]">
-                        {promo.endDate
-                          ? `до ${new Date(promo.endDate).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" })}`
-                          : ""}
-                      </span>
-                      <Link href="#" className="text-brand text-[15px] font-semibold hover:text-brand-hover flex items-center gap-1">
+                ))}
+              </div>
+            </section>
+          )
+        })()}
+
+        {/* ── News ── */}
+        {(() => {
+          const displayNews = newsItems.length > 0
+            ? newsItems.map((n) => ({
+                id: String(n.id),
+                title: n.title,
+                imageUrl: n.imageUrl,
+                publishedAt: String(n.publishedAt),
+              }))
+            : staticNews
+
+          return (
+            <section className="mx-auto max-w-[1200px] px-5 mb-8">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-dark text-[24px] font-semibold">Новости</h2>
+                <Link href="#" className="text-brand text-[15px] font-semibold hover:text-brand-hover">
+                  Все новости
+                </Link>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {displayNews.map((item) => (
+                  <div key={item.id} className="rounded-[4px] overflow-hidden border border-gray-border hover:border-brand transition-colors group">
+                    <div className="h-[160px] bg-gray-bg">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={item.imageUrl ?? ""} alt={item.title} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="p-4">
+                      <p className="text-gray text-[13px] mb-2">
+                        {new Date(item.publishedAt).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" })}
+                      </p>
+                      <p className="text-dark text-[15px] font-semibold leading-snug mb-3 line-clamp-3">
+                        {item.title}
+                      </p>
+                      <Link href="#" className="text-brand text-[15px] font-semibold hover:text-brand-hover flex items-center gap-1 group-hover:gap-2 transition-all">
                         Подробнее
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                           <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -282,49 +404,11 @@ export default async function HomePage() {
                       </Link>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ── News ── */}
-        {newsItems.length > 0 && (
-          <section className="mx-auto max-w-[1200px] px-5 mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-dark text-[24px] font-semibold">Новости</h2>
-              <Link href="#" className="text-brand text-[15px] font-semibold hover:text-brand-hover">
-                Все новости
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {newsItems.map((item) => (
-                <div key={item.id} className="rounded-[4px] overflow-hidden border border-gray-border hover:border-brand transition-colors group">
-                  <div className="h-[160px] bg-gray-bg">
-                    {item.imageUrl && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <p className="text-gray text-[13px] mb-2">
-                      {new Date(item.publishedAt).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" })}
-                    </p>
-                    <p className="text-dark text-[15px] font-semibold leading-snug mb-3 line-clamp-3">
-                      {item.title}
-                    </p>
-                    <Link href="#" className="text-brand text-[15px] font-semibold hover:text-brand-hover flex items-center gap-1 group-hover:gap-2 transition-all">
-                      Подробнее
-                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                        <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
+                ))}
+              </div>
+            </section>
+          )
+        })()}
 
         {/* ── App download banner ── */}
         <section className="mx-auto max-w-[1200px] px-5 mb-8">
@@ -422,10 +506,15 @@ function MedicationCard({
   )
 }
 
-function ArticleCard({ title, tall = false }: { title: string; tall?: boolean }) {
+function ArticleCard({ title, imageUrl, tall = false }: { title: string; imageUrl?: string; tall?: boolean }) {
   return (
     <div className="rounded-[4px] overflow-hidden border border-gray-border hover:border-brand transition-colors group">
-      <div className={`${tall ? "h-[232px]" : "h-[172px]"} bg-gray-bg`} />
+      <div className={`${tall ? "h-[232px]" : "h-[172px]"} bg-gray-bg`}>
+        {imageUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={imageUrl} alt={title} className="w-full h-full object-cover" />
+        )}
+      </div>
       <div className="p-4">
         <p className="text-dark text-[15px] font-semibold leading-snug mb-3 line-clamp-3">{title}</p>
         <Link href="#" className="text-brand text-[15px] font-semibold hover:text-brand-hover flex items-center gap-1">
@@ -439,10 +528,15 @@ function ArticleCard({ title, tall = false }: { title: string; tall?: boolean })
   )
 }
 
-function WideArticleCard({ title }: { title: string }) {
+function WideArticleCard({ title, imageUrl }: { title: string; imageUrl?: string }) {
   return (
     <div className="flex flex-col md:flex-row rounded-[4px] overflow-hidden border border-gray-border hover:border-brand transition-colors">
-      <div className="w-full md:w-[282px] md:shrink-0 bg-gray-bg h-[160px] md:h-[172px]" />
+      <div className="w-full md:w-[282px] md:shrink-0 bg-gray-bg h-[160px] md:h-[172px]">
+        {imageUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={imageUrl} alt={title} className="w-full h-full object-cover" />
+        )}
+      </div>
       <div className="flex flex-col justify-between p-5 flex-1">
         <p className="text-dark text-[16px] font-semibold leading-snug line-clamp-3">{title}</p>
         <Link href="#" className="text-brand text-[15px] font-semibold hover:text-brand-hover flex items-center gap-1">
@@ -464,7 +558,7 @@ function PharmacyLeaderTable({
 }: {
   title: string
   subtitle: string
-  items: { name: string; address: string; price: string }[]
+  items: { name: string; address: string; price: string, logoUrl: string | null }[]
   activeIndex?: number
 }) {
   return (
@@ -482,10 +576,7 @@ function PharmacyLeaderTable({
             }`}
           >
             <div className="w-[92px] h-[92px] shrink-0 border border-gray-border rounded-[4px] bg-gray-bg flex items-center justify-center">
-              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <circle cx="16" cy="16" r="15" fill="#eaf6f1" />
-                <path d="M10 16h12M16 10v12" stroke="#29a373" strokeWidth="2.5" strokeLinecap="round" />
-              </svg>
+              <Image src={item.logoUrl || ""} width={100} height={100} alt="logo" />
             </div>
             <div className="flex flex-col gap-1 flex-1 min-w-0">
               <p className="text-dark text-[16px] font-semibold leading-snug">{item.name}</p>

@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import {usePathname, useRouter} from "next/navigation";
-import { useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
 import { logoutAction } from "@/lib/actions/auth";
@@ -22,6 +22,8 @@ type HeaderProps = {
   medicationCount?: number;
 };
 
+const regions = ["Все регионы", "Минск", "Гомель", "Витебск", "Гродно", "Брест", "Могилёв"]
+
 const navLinks = [
   { label: "Аптеки", href: "/pharmacies" },
   { label: "Производители", href: "#" },
@@ -34,14 +36,37 @@ const navLinks = [
 function Header({ user, pharmacyCount = 0, medicationCount = 0 }: HeaderProps) {
   const pathname = usePathname()
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [query, setQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [selectedRegion, setSelectedRegion] = useState("Все регионы");
+  const [regionOpen, setRegionOpen] = useState(false);
+
+  useEffect(() => {
+    const urlRegion = searchParams.get("region");
+    setSelectedRegion(urlRegion && regions.includes(urlRegion) ? urlRegion : "Все регионы");
+  }, [searchParams]);
+
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
     if (query.trim()) {
-      router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+      const params = new URLSearchParams();
+      params.set("q", query.trim());
+      if (selectedRegion !== "Все регионы") params.set("region", selectedRegion);
+      router.push(`/search?${params.toString()}`);
       setMobileMenuOpen(false);
+    }
+  }
+
+  function handleRegionSelect(region: string) {
+    setSelectedRegion(region);
+    setRegionOpen(false);
+    if (pathname === "/search") {
+      const params = new URLSearchParams(searchParams.toString());
+      if (region === "Все регионы") params.delete("region");
+      else params.set("region", region);
+      router.push(`/search?${params.toString()}`);
     }
   }
 
@@ -65,9 +90,9 @@ function Header({ user, pharmacyCount = 0, medicationCount = 0 }: HeaderProps) {
           >
             <button
               type="button"
-              className="flex items-center gap-2 shrink-0 h-[48px] px-4 bg-brand text-white rounded-[4px] text-[15px] font-semibold hover:bg-brand-hover transition-colors"
+              className="flex items-center gap-1.5 shrink-0 h-[40px] px-3 bg-brand text-white rounded-[4px] text-[14px] font-semibold hover:bg-brand-hover transition-colors"
             >
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <svg width="17" height="17" viewBox="0 0 20 20" fill="none">
                 <rect x="1" y="1" width="7" height="7" rx="1" fill="white" />
                 <rect x="11" y="1" width="7" height="7" rx="1" fill="white" />
                 <rect x="1" y="11" width="7" height="7" rx="1" fill="white" />
@@ -76,28 +101,50 @@ function Header({ user, pharmacyCount = 0, medicationCount = 0 }: HeaderProps) {
               Каталог
             </button>
 
-            <div className="flex flex-1 items-center border border-brand rounded-[4px] h-[48px] overflow-hidden">
-              <div className="flex items-center gap-1 h-full px-3 bg-brand-light border-r border-brand shrink-0">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path
-                    d="M8 1C5.24 1 3 3.24 3 6c0 4.25 5 9 5 9s5-4.75 5-9c0-2.76-2.24-5-5-5zm0 6.75A1.75 1.75 0 1 1 8 4.25a1.75 1.75 0 0 1 0 3.5z"
-                    fill="#29a373"
-                  />
-                </svg>
-                <span className="text-brand text-[15px] whitespace-nowrap">Все регионы</span>
-              </div>
+            <div className="flex flex-1 items-center border border-brand rounded-[4px] h-[40px] overflow-hidden">
+              <Popover open={regionOpen} onOpenChange={setRegionOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    className="flex items-center gap-1 h-[40px] w-[140px] px-2.5 bg-brand-light border-r border-brand hover:bg-green-100 transition-colors shrink-0"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="shrink-0">
+                      <path
+                        d="M8 1C5.24 1 3 3.24 3 6c0 4.25 5 9 5 9s5-4.75 5-9c0-2.76-2.24-5-5-5zm0 6.75A1.75 1.75 0 1 1 8 4.25a1.75 1.75 0 0 1 0 3.5z"
+                        fill="#29a373"
+                      />
+                    </svg>
+                    <span className="text-brand text-[13px] whitespace-nowrap flex-1 text-left truncate">{selectedRegion}</span>
+                    <svg width="11" height="11" viewBox="0 0 12 12" fill="none" className={`shrink-0 transition-transform ${regionOpen ? "rotate-180" : ""}`}>
+                      <path d="M2 4l4 4 4-4" stroke="#29a373" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent align="start" sideOffset={4} className="w-[160px] p-1 gap-0 rounded">
+                  {regions.map((r) => (
+                    <button
+                      key={r}
+                      type="button"
+                      onClick={() => handleRegionSelect(r)}
+                      className={`w-full text-left px-3 py-2 text-[13px] rounded-[2px] hover:bg-brand-light transition-colors ${selectedRegion === r ? "text-brand font-semibold" : "text-dark"}`}
+                    >
+                      {r}
+                    </button>
+                  ))}
+                </PopoverContent>
+              </Popover>
               <input
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Поиск лекарств"
-                className="flex-1 px-3 text-[15px] text-dark outline-none bg-transparent"
+                className="flex-1 px-3 text-[14px] text-dark outline-none bg-transparent"
               />
               <button
                 type="submit"
-                className="flex items-center justify-center h-full w-12 bg-brand hover:bg-brand-hover transition-colors shrink-0"
+                className="flex items-center justify-center h-full w-10 bg-brand hover:bg-brand-hover transition-colors shrink-0"
               >
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <svg width="17" height="17" viewBox="0 0 20 20" fill="none">
                   <circle cx="9" cy="9" r="5.5" stroke="white" strokeWidth="2" />
                   <path d="M13.5 13.5L17 17" stroke="white" strokeWidth="2" strokeLinecap="round" />
                 </svg>
@@ -136,6 +183,23 @@ function Header({ user, pharmacyCount = 0, medicationCount = 0 }: HeaderProps) {
                 </DrawerHeader>
 
                 <div className="px-4 pb-6 overflow-y-auto flex flex-col gap-5">
+                  {/* Mobile region select */}
+                  <div>
+                    <p className="text-[13px] text-gray mb-2">Регион</p>
+                    <div className="flex flex-wrap gap-2">
+                      {regions.map((r) => (
+                        <button
+                          key={r}
+                          type="button"
+                          onClick={() => handleRegionSelect(r)}
+                          className={`px-3 py-1.5 rounded-[4px] text-[13px] border transition-colors ${selectedRegion === r ? "bg-brand text-white border-brand" : "border-gray-border text-dark hover:border-brand hover:text-brand"}`}
+                        >
+                          {r}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   {/* Mobile search */}
                   <form onSubmit={handleSearch} className="flex items-center border border-brand rounded-[4px] h-[48px] overflow-hidden">
                     <input

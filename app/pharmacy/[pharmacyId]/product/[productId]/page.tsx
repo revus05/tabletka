@@ -125,9 +125,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
                         Забронировать
                       </button>
                     )}
-                    <button className="h-[44px] px-6 border border-brand text-brand text-[16px] font-semibold rounded-[4px] hover:bg-brand-light transition-colors">
+                    <a
+                      href="#pharmacy-map"
+                      className="h-[44px] px-6 border border-brand text-brand text-[16px] font-semibold rounded-[4px] hover:bg-brand-light transition-colors flex items-center"
+                    >
                       На карте
-                    </button>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -177,11 +180,28 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 </div>
               </div>
             )}
+
+            {/* Map */}
+            <div id="pharmacy-map" className="border border-gray-border rounded-[4px] overflow-hidden">
+              <div className="px-6 pt-5 pb-4">
+                <h2 className="text-dark text-[18px] font-semibold">На карте</h2>
+                <p className="text-gray text-[14px] mt-1">{pharmacy.city}, {pharmacy.address}</p>
+              </div>
+              <iframe
+                  src={`https://yandex.ru/map-widget/v1/?text=${encodeURIComponent(`${pharmacy.city}, ${pharmacy.address}`)}&z=16&lang=ru_RU`}
+                  width="100%"
+                  height="360"
+                  frameBorder="0"
+                  allowFullScreen
+                  title="Карта аптеки"
+                  className="block"
+              />
+            </div>
           </div>
 
           {/* ── Sidebar: Pharmacy info ── */}
           <aside className="flex flex-col gap-4">
-            <div className="border border-gray-border rounded-[4px] p-5 md:sticky md:top-[100px]">
+            <div className="border border-gray-border rounded-[4px] p-5 md:sticky md:top-[144px]">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-[48px] h-[48px] border border-gray-border rounded-[4px] bg-gray-bg flex items-center justify-center shrink-0 overflow-hidden">
                   {pharmacy.logoUrl ? (
@@ -226,8 +246,17 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </div>
 
               <div className="mt-4 pt-4 border-t border-gray-border">
-                <div className="h-[140px] bg-brand-light rounded-[4px] flex items-center justify-center">
-                  <span className="text-gray text-[13px]">Карта</span>
+                <a href="#pharmacy-map" className="text-[13px] text-gray mb-2 block">На карте ↓</a>
+                <div className="rounded-[4px] overflow-hidden">
+                  <iframe
+                    src={`https://yandex.ru/map-widget/v1/?text=${encodeURIComponent(`${pharmacy.city}, ${pharmacy.address}`)}&z=16&lang=ru_RU`}
+                    width="100%"
+                    height="160"
+                    frameBorder="0"
+                    allowFullScreen
+                    title="Мини-карта аптеки"
+                    className="block"
+                  />
                 </div>
               </div>
             </div>

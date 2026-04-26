@@ -6,57 +6,58 @@ export type SearchParams = {
   inStock?: boolean
 }
 
-export type SearchResult = {
+export type MedicationResult = {
   id: number
-  pharmacyId: number
-  pharmacyName: string
-  address: string
-  city: string
-  logoUrl: string | null
-  price: number
-  quantity: number
-  maxQuantity: number
-  inStock: boolean
-  medicationId: number
-  medicationName: string
+  name: string
+  genericName: string | null
+  manufacturer: string | null
+  imageUrl: string | null
+  minPrice: number | null
+  pharmacyCount: number
+  anyInStock: boolean
 }
 
-export async function searchMedications({ q, region, inStock }: SearchParams): Promise<SearchResult[]> {
-  if (!q.trim()) return []
+export async function searchMedications({ q, region, inStock }: SearchParams): Promise<MedicationResult[]> {
+  const stockWhere = {
+    ...(inStock ? { inStock: true } : {}),
+    ...(region && region !== "Все регионы"
+      ? { pharmacy: { OR: [{ city: region }, { region }] } }
+      : {}),
+  }
 
-  const results = await prisma.stock.findMany({
+  const medications = await prisma.medication.findMany({
     where: {
-      ...(inStock ? { inStock: true } : {}),
-      medication: {
-        OR: [
-          { name: { contains: q, mode: "insensitive" } },
-          { genericName: { contains: q, mode: "insensitive" } },
-        ],
-      },
-      ...(region && region !== "Все регионы"
-        ? { pharmacy: { OR: [{ city: region }, { region }] } }
+      ...(q.trim()
+        ? {
+            OR: [
+              { name: { contains: q, mode: "insensitive" } },
+              { genericName: { contains: q, mode: "insensitive" } },
+            ],
+          }
         : {}),
+      stocks: { some: stockWhere },
     },
     include: {
-      medication: { select: { id: true, name: true } },
-      pharmacy: { select: { id: true, name: true, address: true, city: true, logoUrl: true } },
+      stocks: {
+        where: stockWhere,
+        select: { price: true, inStock: true },
+      },
     },
-    orderBy: { price: "asc" },
-    take: 50,
+    orderBy: { name: "asc" },
+    take: 200,
   })
 
-  return results.map((r) => ({
-    id: r.id,
-    pharmacyId: r.pharmacyId,
-    pharmacyName: r.pharmacy.name,
-    address: r.pharmacy.address,
-    city: r.pharmacy.city,
-    logoUrl: r.pharmacy.logoUrl,
-    price: Number(r.price),
-    quantity: r.quantity,
-    maxQuantity: r.maxQuantity,
-    inStock: r.inStock,
-    medicationId: r.medicationId,
-    medicationName: r.medication.name,
-  }))
+  return medications.map((med) => {
+    const prices = med.stocks.map((s) => Number(s.price))
+    return {
+      id: med.id,
+      name: med.name,
+      genericName: med.genericName,
+      manufacturer: med.manufacturer,
+      imageUrl: med.imageUrl,
+      minPrice: prices.length ? Math.min(...prices) : null,
+      pharmacyCount: med.stocks.length,
+      anyInStock: med.stocks.some((s) => s.inStock),
+    }
+  })
 }
