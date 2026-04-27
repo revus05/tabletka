@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react"
 import { ImageUpload } from "./image-upload"
+import { PharmacyMapPicker } from "./pharmacy-map-picker"
 import type { ActionResult } from "@/lib/actions/pharmacies"
 
 type PharmacyFormProps = {
@@ -13,12 +14,17 @@ type PharmacyFormProps = {
     region?: string
     phone?: string
     logoUrl?: string
+    latitude?: number | null
+    longitude?: number | null
   }
 }
 
 export function PharmacyForm({ action, defaultValues = {} }: PharmacyFormProps) {
   const [state, formAction, isPending] = useActionState(action, null)
   const [logoUrl, setLogoUrl] = useState(defaultValues.logoUrl ?? "")
+  const [address, setAddress] = useState(defaultValues.address ?? "")
+  const [lat, setLat] = useState<number | null>(defaultValues.latitude ?? null)
+  const [lng, setLng] = useState<number | null>(defaultValues.longitude ?? null)
 
   return (
     <form action={formAction} className="flex flex-col gap-4 max-w-[600px]">
@@ -46,7 +52,8 @@ export function PharmacyForm({ action, defaultValues = {} }: PharmacyFormProps) 
           type="text"
           name="address"
           required
-          defaultValue={defaultValues.address}
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
           placeholder="ул. Ленина, 1"
           className="h-[44px] px-3 border border-gray-border rounded-[4px] text-[15px] outline-none focus:border-brand transition-colors"
         />
@@ -99,6 +106,18 @@ export function PharmacyForm({ action, defaultValues = {} }: PharmacyFormProps) 
           onChange={setLogoUrl}
           folder="pharmacies"
         />
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <label className="text-[14px] font-semibold text-dark">Точка на карте</label>
+        <PharmacyMapPicker
+          address={address}
+          defaultLat={defaultValues.latitude}
+          defaultLng={defaultValues.longitude}
+          onChange={(newLat, newLng) => { setLat(newLat); setLng(newLng) }}
+        />
+        <input type="hidden" name="latitude" value={lat ?? ""} />
+        <input type="hidden" name="longitude" value={lng ?? ""} />
       </div>
 
       <div className="flex gap-3 pt-2">

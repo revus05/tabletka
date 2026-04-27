@@ -15,6 +15,8 @@ const PharmacySchema = z.object({
   region: z.string().min(2, "Укажите регион"),
   phone: z.string().optional(),
   logoUrl: z.string().optional(),
+  latitude: z.preprocess((v) => (v === "" || v == null ? undefined : Number(v)), z.number().optional()),
+  longitude: z.preprocess((v) => (v === "" || v == null ? undefined : Number(v)), z.number().optional()),
 });
 
 export async function createPharmacyAction(
@@ -30,6 +32,8 @@ export async function createPharmacyAction(
     region: formData.get("region"),
     phone: formData.get("phone") || undefined,
     logoUrl: formData.get("logoUrl") || undefined,
+    latitude: formData.get("latitude"),
+    longitude: formData.get("longitude"),
   });
 
   if (!parsed.success) {
@@ -55,6 +59,8 @@ export async function updatePharmacyAction(
     region: formData.get("region"),
     phone: formData.get("phone") || undefined,
     logoUrl: formData.get("logoUrl") || undefined,
+    latitude: formData.get("latitude"),
+    longitude: formData.get("longitude"),
   });
 
   if (!parsed.success) {

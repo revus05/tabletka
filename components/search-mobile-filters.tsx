@@ -39,20 +39,43 @@ export function SearchMobileFilters({ query, region, inStock, regions }: Props) 
         </DrawerHeader>
 
         <div className="px-4 pb-6 overflow-y-auto">
-          <form method="GET" action="/search" onSubmit={() => setOpen(false)}>
+          <form
+            method="GET"
+            action="/search"
+            onSubmit={(e) => {
+              // Combine selected regions into comma-separated string
+              const formData = new FormData(e.currentTarget)
+              const selectedRegions = formData.getAll("region") as string[]
+
+              // Create new URL params
+              const params = new URLSearchParams()
+              if (query) params.set("q", query)
+              if (selectedRegions.length > 0) {
+                params.set("region", selectedRegions.join(","))
+              }
+
+              const inStockCheckbox = formData.get("inStock")
+              if (inStockCheckbox) params.set("inStock", "true")
+
+              // Navigate with updated params
+              window.location.href = `/search?${params.toString()}`
+              setOpen(false)
+              e.preventDefault()
+            }}
+          >
             {query && <input type="hidden" name="q" value={query} />}
 
             <div className="bg-gray-bg rounded-[4px] p-5 mb-4">
               <h3 className="text-dark text-[16px] font-semibold mb-4">Регион</h3>
               <div className="flex flex-col gap-2">
-                {regions.map((r) => (
+                {regions.filter(r => r !== "Все регионы").map((r) => (
                   <label key={r} className="flex items-center gap-2 cursor-pointer group">
                     <input
-                      type="radio"
+                      type="checkbox"
                       name="region"
                       value={r}
-                      defaultChecked={region ? region === r : r === "Все регионы"}
-                      className="accent-brand"
+                      defaultChecked={region ? region.split(",").filter(Boolean).includes(r) : false}
+                      className="accent-brand w-4 h-4"
                     />
                     <span className="text-[15px] text-dark group-hover:text-brand transition-colors">{r}</span>
                   </label>

@@ -33,6 +33,8 @@ export default async function EditPharmacyPage({ params }: Props) {
             region: pharmacy.region,
             phone: pharmacy.phone ?? "",
             logoUrl: pharmacy.logoUrl ?? "",
+            latitude: pharmacy.latitude,
+            longitude: pharmacy.longitude,
           }}
         />
       </div>

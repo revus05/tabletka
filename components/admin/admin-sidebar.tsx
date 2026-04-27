@@ -1,15 +1,23 @@
 "use client";
 
+import {
+  Hospital,
+  LayoutDashboard,
+  Library,
+  Pill,
+  Warehouse,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/components/ui/logo";
 import { logoutAction } from "@/lib/actions/auth";
 
 const navItems = [
-  { href: "/admin", label: "Дашборд", icon: "⊞" },
-  { href: "/admin/pharmacies", label: "Аптеки", icon: "⊕" },
-  { href: "/admin/medications", label: "Лекарства", icon: "+" },
-  { href: "/admin/stock", label: "Остатки", icon: "≡" },
+  { href: "/admin", label: "Дашборд", icon: <LayoutDashboard /> },
+  { href: "/admin/pharmacies", label: "Аптеки", icon: <Hospital /> },
+  { href: "/admin/medications", label: "Лекарства", icon: <Pill /> },
+  { href: "/admin/stock", label: "Остатки", icon: <Warehouse /> },
+  { href: "/admin/bookings", label: "Брони", icon: <Library /> },
 ];
 
 export function AdminSidebar({ userName }: { userName: string }) {

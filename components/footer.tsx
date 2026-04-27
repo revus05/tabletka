@@ -3,7 +3,7 @@ import { Logo } from "@/components/ui/logo";
 
 export function Footer() {
   return (
-    <footer className="bg-dark text-white mt-12">
+    <footer className="bg-dark text-white mt-auto">
       <div className="mx-auto max-w-[1200px] px-5 py-10">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {/* Logo + description */}

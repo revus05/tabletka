@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import { Footer } from "@/components/footer"
+import { FavoriteButton } from "@/components/favorite-button"
 import { prisma } from "@/lib/prisma"
 
 type Props = {
@@ -70,9 +70,12 @@ export default async function MedicationPage({ params, searchParams }: Props) {
 
             {/* Details */}
             <div className="flex-1 min-w-0">
-              <h1 className="text-dark text-[22px] md:text-[26px] font-semibold mb-2 leading-snug">
-                {medication.name}
-              </h1>
+              <div className="flex items-start justify-between gap-4 mb-2">
+                <h1 className="text-dark text-[22px] md:text-[26px] font-semibold leading-snug">
+                  {medication.name}
+                </h1>
+                <FavoriteButton medicationId={medication.id} showLabel />
+              </div>
 
               {medication.genericName && (
                 <p className="text-gray text-[14px] mb-1">МНН: {medication.genericName}</p>
@@ -192,8 +195,6 @@ export default async function MedicationPage({ params, searchParams }: Props) {
           </div>
         )}
       </main>
-
-      <Footer />
     </div>
   )
 }

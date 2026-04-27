@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import { Footer } from "@/components/footer"
+import { FavoriteButton } from "@/components/favorite-button"
+import { BookingForm } from "@/components/booking-form"
 import { prisma } from "@/lib/prisma"
+import { getSession } from "@/lib/session"
 
 type ProductPageProps = {
   params: Promise<{ pharmacyId: string; productId: string }>
@@ -25,18 +27,33 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   if (!stock) notFound()
 
-  const otherStocks = await prisma.stock.findMany({
-    where: {
-      medicationId: Number(productId),
-      pharmacyId: { not: Number(pharmacyId) },
-      inStock: true,
-    },
-    include: { pharmacy: true },
-    orderBy: { price: "asc" },
-    take: 5,
-  })
+  const [otherStocks, session] = await Promise.all([
+    prisma.stock.findMany({
+      where: {
+        medicationId: Number(productId),
+        pharmacyId: { not: Number(pharmacyId) },
+        inStock: true,
+      },
+      include: { pharmacy: true },
+      orderBy: { price: "asc" },
+      take: 5,
+    }),
+    getSession(),
+  ])
+
+  // Fetch user data if logged in
+  const user = session
+    ? await prisma.user.findUnique({
+        where: { id: Number(session.sub) },
+        select: { name: true, email: true, phone: true },
+      })
+    : null
 
   const { medication, pharmacy } = stock
+
+  const mapSrc = pharmacy.latitude && pharmacy.longitude
+    ? `https://yandex.ru/map-widget/v1/?ll=${pharmacy.longitude},${pharmacy.latitude}&z=16&pt=${pharmacy.longitude},${pharmacy.latitude},pm2rdm&lang=ru_RU`
+    : `https://yandex.ru/map-widget/v1/?text=${encodeURIComponent(`${pharmacy.city}, ${pharmacy.address}`)}&z=16&lang=ru_RU`
 
   const scarcityPct = stock.inStock
     ? Math.max(5, Math.round((stock.quantity / stock.maxQuantity) * 100))
@@ -119,11 +136,17 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex gap-3">
+                  <div className="flex flex-wrap gap-3">
                     {stock.inStock && (
-                      <button className="h-[44px] px-8 bg-brand text-white text-[16px] font-semibold rounded-[4px] hover:bg-brand-hover transition-colors">
-                        Забронировать
-                      </button>
+                      <BookingForm
+                        pharmacyId={pharmacy.id}
+                        pharmacyName={pharmacy.name}
+                        medicationId={medication.id}
+                        medicationName={medication.name}
+                        price={Number(stock.price)}
+                        maxQuantity={stock.quantity}
+                        user={user}
+                      />
                     )}
                     <a
                       href="#pharmacy-map"
@@ -131,6 +154,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     >
                       На карте
                     </a>
+                    <FavoriteButton medicationId={medication.id} showLabel />
                   </div>
                 </div>
               </div>
@@ -188,7 +212,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 <p className="text-gray text-[14px] mt-1">{pharmacy.city}, {pharmacy.address}</p>
               </div>
               <iframe
-                  src={`https://yandex.ru/map-widget/v1/?text=${encodeURIComponent(`${pharmacy.city}, ${pharmacy.address}`)}&z=16&lang=ru_RU`}
+                  src={mapSrc}
                   width="100%"
                   height="360"
                   frameBorder="0"
@@ -249,7 +273,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 <a href="#pharmacy-map" className="text-[13px] text-gray mb-2 block">На карте ↓</a>
                 <div className="rounded-[4px] overflow-hidden">
                   <iframe
-                    src={`https://yandex.ru/map-widget/v1/?text=${encodeURIComponent(`${pharmacy.city}, ${pharmacy.address}`)}&z=16&lang=ru_RU`}
+                    src={mapSrc}
                     width="100%"
                     height="160"
                     frameBorder="0"
@@ -263,8 +287,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </aside>
         </div>
       </main>
-
-      <Footer />
     </div>
   )
 }

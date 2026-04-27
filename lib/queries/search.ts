@@ -18,10 +18,20 @@ export type MedicationResult = {
 }
 
 export async function searchMedications({ q, region, inStock }: SearchParams): Promise<MedicationResult[]> {
+  // Support multiple regions: comma-separated string
+  let regionList: string[] = []
+
+  if (region && typeof region === "string") {
+    regionList = region
+      .split(",")
+      .map(r => r.trim())
+      .filter(r => r && r !== "Все регионы")
+  }
+
   const stockWhere = {
     ...(inStock ? { inStock: true } : {}),
-    ...(region && region !== "Все регионы"
-      ? { pharmacy: { OR: [{ city: region }, { region }] } }
+    ...(regionList.length > 0
+      ? { pharmacy: { OR: regionList.flatMap(r => [{ city: r }, { region: r }]) } }
       : {}),
   }
 

@@ -5,8 +5,11 @@ import "./globals.css";
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import Header from "@/components/header";
+import { Footer } from "@/components/footer";
 import { ThemeProvider } from "@/components/theme-provider";
+import { FavoritesProvider } from "@/components/favorites-context";
 import { getSession } from "@/lib/session";
+import { getUserFavorites } from "@/lib/actions/favorites";
 import { cn } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
 import { PwaRegister } from "./pwa-register";
@@ -45,6 +48,7 @@ export default async function RootLayout({
   const isAdmin = pathname.startsWith("/admin");
 
   const session = isAdmin ? null : await getSession();
+  const userFavorites = isAdmin ? [] : await getUserFavorites();
 
   // Fetch counts for header
   const [pharmacyCount, medicationCount] = await Promise.all([
@@ -58,10 +62,13 @@ export default async function RootLayout({
       suppressHydrationWarning
       className={cn("antialiased", roboto.variable, "font-sans")}
     >
-      <body>
+      <body className="flex flex-col min-h-screen">
         <ThemeProvider>
-          {<Header user={session} pharmacyCount={pharmacyCount} medicationCount={medicationCount} />}
-          {children}
+          <FavoritesProvider initialFavorites={userFavorites}>
+            {<Header user={session} pharmacyCount={pharmacyCount} medicationCount={medicationCount} />}
+              {children}
+            <Footer />
+          </FavoritesProvider>
         </ThemeProvider>
         <PwaRegister />
       </body>
