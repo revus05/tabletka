@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { getSession } from "@/lib/session"
+import { BookingFormSchema } from "@/lib/schemas/booking"
 
 export type BookingFormData = {
   pharmacyId: number
@@ -19,6 +20,22 @@ export async function createBooking(data: BookingFormData) {
   if (!session) {
     return { error: "Необходимо войти в аккаунт" }
   }
+
+  // Validate form data
+  const validationResult = BookingFormSchema.safeParse({
+    quantity: data.quantity,
+    customerName: data.customerName,
+    customerPhone: data.customerPhone,
+    customerEmail: data.customerEmail || "",
+    notes: data.notes || "",
+  })
+
+  if (!validationResult.success) {
+    const errors = validationResult.error.errors.map((err) => err.message).join(", ")
+    return { error: errors }
+  }
+
+  const validatedData = validationResult.data
 
   // Verify stock exists and is in stock
   const stock = await prisma.stock.findUnique({
@@ -44,11 +61,11 @@ export async function createBooking(data: BookingFormData) {
         userId: Number(session.sub),
         pharmacyId: data.pharmacyId,
         medicationId: data.medicationId,
-        quantity: data.quantity,
-        customerName: data.customerName,
-        customerPhone: data.customerPhone,
-        customerEmail: data.customerEmail || null,
-        notes: data.notes || null,
+        quantity: validatedData.quantity,
+        customerName: validatedData.customerName,
+        customerPhone: validatedData.customerPhone,
+        customerEmail: validatedData.customerEmail || null,
+        notes: validatedData.notes || null,
       },
     })
 

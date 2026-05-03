@@ -10,7 +10,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/components/ui/logo";
-import { logoutAction } from "@/lib/actions/auth";
+import { LogoutButton } from "@/components/logout-button";
 
 const navItems = [
   { href: "/admin", label: "Дашборд", icon: <LayoutDashboard /> },
@@ -59,14 +59,9 @@ export function AdminSidebar({ userName }: { userName: string }) {
 
       <div className="p-4 border-t border-gray-border">
         <p className="text-[13px] text-gray mb-2 truncate">{userName}</p>
-        <form action={logoutAction}>
-          <button
-            type="submit"
-            className="w-full h-[36px] text-[14px] text-gray hover:text-error border border-gray-border rounded-[4px] hover:border-error transition-colors"
-          >
-            Выйти
-          </button>
-        </form>
+        <LogoutButton className="w-full h-[36px] text-[14px] text-gray hover:text-error border border-gray-border rounded-[4px] hover:border-error transition-colors">
+          Выйти
+        </LogoutButton>
       </div>
     </aside>
   );

@@ -2,7 +2,10 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { createBooking } from "@/lib/actions/bookings"
+import { BookingFormSchema, type BookingFormInput } from "@/lib/schemas/booking"
 import {
   Drawer,
   DrawerContent,
@@ -53,22 +56,38 @@ export function BookingForm({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
-  const [quantity, setQuantity] = useState(1)
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<BookingFormInput>({
+    resolver: zodResolver(BookingFormSchema),
+    defaultValues: {
+      quantity: 1,
+      customerName: user?.name || "",
+      customerPhone: user?.phone || "",
+      customerEmail: user?.email || "",
+      notes: "",
+    },
+  })
+
+  const quantity = watch("quantity")
+
+  async function onSubmit(formData: BookingFormInput) {
     setLoading(true)
     setError(null)
 
-    const formData = new FormData(e.currentTarget)
     const result = await createBooking({
       pharmacyId,
       medicationId,
-      quantity: Number(formData.get("quantity")),
-      customerName: formData.get("customerName") as string,
-      customerPhone: formData.get("customerPhone") as string,
-      customerEmail: formData.get("customerEmail") as string || undefined,
-      notes: formData.get("notes") as string || undefined,
+      quantity: formData.quantity,
+      customerName: formData.customerName,
+      customerPhone: formData.customerPhone,
+      customerEmail: formData.customerEmail || undefined,
+      notes: formData.notes || undefined,
     })
 
     setLoading(false)
@@ -113,31 +132,32 @@ export function BookingForm({
         <p className="text-brand text-[18px] font-semibold">{price.toFixed(2)} р.</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <div>
           <label className="block text-[14px] text-dark font-medium mb-1.5">Количество</label>
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              onClick={() => setValue("quantity", Math.max(1, quantity - 1))}
               className="w-10 h-10 border border-gray-border rounded-[4px] flex items-center justify-center hover:border-brand transition-colors"
             >−</button>
             <input
               type="number"
-              name="quantity"
-              value={quantity}
-              onChange={(e) => setQuantity(Math.max(1, Math.min(maxQuantity, Number(e.target.value))))}
+              {...register("quantity", { valueAsNumber: true })}
               min={1}
               max={maxQuantity}
               className="w-20 h-10 border border-gray-border rounded-[4px] text-center text-[15px] focus:border-brand outline-none"
             />
             <button
               type="button"
-              onClick={() => setQuantity(Math.min(maxQuantity, quantity + 1))}
+              onClick={() => setValue("quantity", Math.min(maxQuantity, quantity + 1))}
               className="w-10 h-10 border border-gray-border rounded-[4px] flex items-center justify-center hover:border-brand transition-colors"
             >+</button>
             <span className="text-[13px] text-gray">из {maxQuantity} шт.</span>
           </div>
+          {errors.quantity && (
+            <p className="text-error text-[13px] mt-1">{errors.quantity.message}</p>
+          )}
         </div>
 
         <div className="bg-brand-light rounded-[4px] p-3 flex items-center justify-between">
@@ -147,22 +167,51 @@ export function BookingForm({
 
         <div>
           <label className="block text-[14px] text-dark font-medium mb-1.5">Имя <span className="text-error">*</span></label>
-          <input type="text" name="customerName" defaultValue={user.name} required className="w-full h-[44px] px-3 border border-gray-border rounded-[4px] text-[15px] focus:border-brand outline-none" />
+          <input
+            type="text"
+            {...register("customerName")}
+            className="w-full h-[44px] px-3 border border-gray-border rounded-[4px] text-[15px] focus:border-brand outline-none"
+          />
+          {errors.customerName && (
+            <p className="text-error text-[13px] mt-1">{errors.customerName.message}</p>
+          )}
         </div>
 
         <div>
           <label className="block text-[14px] text-dark font-medium mb-1.5">Телефон <span className="text-error">*</span></label>
-          <input type="tel" name="customerPhone" defaultValue={user.phone || ""} required placeholder="+375 (XX) XXX-XX-XX" className="w-full h-[44px] px-3 border border-gray-border rounded-[4px] text-[15px] focus:border-brand outline-none" />
+          <input
+            type="tel"
+            {...register("customerPhone")}
+            placeholder="+375 (XX) XXX-XX-XX"
+            className="w-full h-[44px] px-3 border border-gray-border rounded-[4px] text-[15px] focus:border-brand outline-none"
+          />
+          {errors.customerPhone && (
+            <p className="text-error text-[13px] mt-1">{errors.customerPhone.message}</p>
+          )}
         </div>
 
         <div>
           <label className="block text-[14px] text-dark font-medium mb-1.5">Email</label>
-          <input type="email" name="customerEmail" defaultValue={user.email || ""} className="w-full h-[44px] px-3 border border-gray-border rounded-[4px] text-[15px] focus:border-brand outline-none" />
+          <input
+            type="email"
+            {...register("customerEmail")}
+            className="w-full h-[44px] px-3 border border-gray-border rounded-[4px] text-[15px] focus:border-brand outline-none"
+          />
+          {errors.customerEmail && (
+            <p className="text-error text-[13px] mt-1">{errors.customerEmail.message}</p>
+          )}
         </div>
 
         <div>
           <label className="block text-[14px] text-dark font-medium mb-1.5">Комментарий</label>
-          <textarea name="notes" rows={2} className="w-full px-3 py-2 border border-gray-border rounded-[4px] text-[15px] focus:border-brand outline-none resize-none" />
+          <textarea
+            {...register("notes")}
+            rows={2}
+            className="w-full px-3 py-2 border border-gray-border rounded-[4px] text-[15px] focus:border-brand outline-none resize-none"
+          />
+          {errors.notes && (
+            <p className="text-error text-[13px] mt-1">{errors.notes.message}</p>
+          )}
         </div>
 
         {error && (

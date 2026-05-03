@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import {
   Drawer,
   DrawerContent,
@@ -12,7 +11,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Logo } from "@/components/ui/logo";
-import { logoutAction } from "@/lib/actions/auth";
+import { LogoutButton } from "@/components/logout-button";
 import type { JWTPayload } from "@/lib/auth";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
@@ -360,15 +359,9 @@ function Header({ user, pharmacyCount = 0, medicationCount = 0 }: HeaderProps) {
                           </svg>
                           <span className="font-semibold">{user.name}</span>
                         </div>
-                        <form action={logoutAction}>
-                          <Button
-                            type="submit"
-                            variant="ghost"
-                            className="w-full justify-start text-error hover:text-error hover:bg-red-50"
-                          >
-                            Выйти
-                          </Button>
-                        </form>
+                        <LogoutButton className="w-full justify-start text-error hover:text-error hover:bg-red-50 h-10 px-2 inline-flex items-center font-medium rounded-md transition-colors">
+                          Выйти
+                        </LogoutButton>
                       </div>
                     ) : (
                       <Link
@@ -529,15 +522,9 @@ function Header({ user, pharmacyCount = 0, medicationCount = 0 }: HeaderProps) {
                         Моя аптечка
                       </Link>
                       <div className="border-t my-1" />
-                      <form action={logoutAction}>
-                        <Button
-                          type="submit"
-                          variant="ghost"
-                          className="w-full justify-start text-error hover:text-error hover:bg-red-50"
-                        >
-                          Выйти
-                        </Button>
-                      </form>
+                      <LogoutButton className="w-full justify-start text-error hover:text-error hover:bg-red-50 h-10 px-2 inline-flex items-center font-medium rounded-md transition-colors">
+                        Выйти
+                      </LogoutButton>
                     </div>
                   </PopoverContent>
                 </Popover>

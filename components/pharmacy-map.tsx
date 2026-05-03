@@ -73,11 +73,16 @@ export function PharmacyMap({ pharmacies }: Props) {
               coords,
               {
                 balloonContentHeader: pharmacy.name,
-                balloonContentBody: pharmacy.address,
+                balloonContentBody: `${pharmacy.address}<br/><a href="/pharmacy/${pharmacy.id}" style="color: #29a373; text-decoration: none; font-weight: 600;">Открыть аптеку →</a>`,
                 hintContent: pharmacy.name,
               },
               { preset: "islands#greenMedicalIcon" }
             )
+
+            // Add click event to navigate to pharmacy page
+            placemark.events.add("click", () => {
+              window.location.href = `/pharmacy/${pharmacy.id}`
+            })
 
             map.geoObjects.add(placemark)
           } catch {
