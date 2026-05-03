@@ -31,7 +31,7 @@ export async function createBooking(data: BookingFormData) {
   })
 
   if (!validationResult.success) {
-    const errors = validationResult.error.errors.map((err) => err.message).join(", ")
+    const errors = validationResult.error.issues.map((err) => err.message).join(", ")
     return { error: errors }
   }
 

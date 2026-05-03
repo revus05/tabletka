@@ -9,25 +9,18 @@ const belarusPhoneRegex = /^\+375\s?\(?\d{2}\)?\s?\d{3}-?\d{2}-?\d{2}$/
 
 export const BookingFormSchema = z.object({
   quantity: z
-    .number({
-      required_error: "Количество обязательно",
-      invalid_type_error: "Количество должно быть числом",
-    })
+    .number()
     .int("Количество должно быть целым числом")
     .min(1, "Минимальное количество: 1"),
 
   customerName: z
-    .string({
-      required_error: "Имя обязательно",
-    })
+    .string()
     .min(2, "Имя должно содержать минимум 2 символа")
     .max(100, "Имя должно содержать максимум 100 символов")
     .trim(),
 
   customerPhone: z
-    .string({
-      required_error: "Телефон обязателен",
-    })
+    .string()
     .regex(
       belarusPhoneRegex,
       "Неверный формат телефона. Используйте формат: +375 (XX) XXX-XX-XX"
